@@ -1,5 +1,5 @@
-#ifdef READMESH_VERTEX
-#define READMESH_VERTEX
+#ifndef READMESH_VERTEX_H_
+#define READMESH_VERTEX_H_
 
 #include <array>
 
@@ -9,7 +9,10 @@
 const unsigned Dim = 3;
 
 class Vertex {
- public: 
+ public:
+  // Default constructor (temperory) for debuggin only 
+  Vertex(){}
+
   // Constructor with coordinates and id
   Vertex(const std::array<double, Dim>& vcoord, const unsigned& vid): vid_{vid}, vcoord_{vcoord}{}
   
@@ -28,4 +31,4 @@ class Vertex {
 
 };
 
-#endif // READMESH_VERTEX
+#endif // READMESH_VERTEX_H_
