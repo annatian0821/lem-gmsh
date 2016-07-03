@@ -70,10 +70,10 @@ am__make_running_with_option = \
   test $$has_opt = yes
 am__make_dryrun = (target_option=n; $(am__make_running_with_option))
 am__make_keepgoing = (target_option=k; $(am__make_running_with_option))
-pkgdatadir = $(datadir)/lem
-pkgincludedir = $(includedir)/lem
-pkglibdir = $(libdir)/lem
-pkglibexecdir = $(libexecdir)/lem
+pkgdatadir = $(datadir)/lem-readmesh
+pkgincludedir = $(includedir)/lem-readmesh
+pkglibdir = $(libdir)/lem-readmesh
+pkglibexecdir = $(libexecdir)/lem-readmesh
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 install_sh_DATA = $(install_sh) -c -m 644
 install_sh_PROGRAM = $(install_sh) -c
@@ -90,7 +90,6 @@ bin_PROGRAMS = readgmsh$(EXEEXT)
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdcxx_11.m4 \
-	$(top_srcdir)/m4/eigen.m4 $(top_srcdir)/m4/voro.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -106,8 +105,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
 am_readgmsh_OBJECTS = src/main.$(OBJEXT)
 readgmsh_OBJECTS = $(am_readgmsh_OBJECTS)
-am__DEPENDENCIES_1 =
-readgmsh_DEPENDENCIES = $(am__DEPENDENCIES_1)
+readgmsh_DEPENDENCIES =
 AM_V_P = $(am__v_P_$(V))
 am__v_P_ = $(am__v_P_$(AM_DEFAULT_VERBOSITY))
 am__v_P_0 = false
@@ -165,8 +163,8 @@ ETAGS = etags
 CTAGS = ctags
 CSCOPE = cscope
 AM_RECURSIVE_TARGETS = cscope
-am__DIST_COMMON = $(srcdir)/Makefile.in compile depcomp install-sh \
-	missing
+am__DIST_COMMON = $(srcdir)/Makefile.in ChangeLog NEWS compile depcomp \
+	install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -184,17 +182,17 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam/missing aclocal-1.15
+ACLOCAL = ${SHELL} /home/krishna/research/lem/readgmsh_refactor/missing aclocal-1.15
 
 # M4 Macros
 ACLOCAL_AMFLAGS = -I ./m4 
 AMTAR = $${TAR-tar}
-AM_CXXFLAGS =  -g -O3 -std=c++11 -fPIC -Wall -fopenmp -lvoro++ -Wno-uninitialized
+AM_CXXFLAGS =  -g -O3 -std=c++11 -fPIC -Wall -fopenmp -Wno-uninitialized
 AM_DEFAULT_VERBOSITY = 1
-AM_LDFLAGS = $(AM_LFLAGS) -fopenmp  $(VORO_LDFLAGS) --coverage
-AUTOCONF = ${SHELL} /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam/missing autoconf
-AUTOHEADER = ${SHELL} /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam/missing autoheader
-AUTOMAKE = ${SHELL} /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam/missing automake-1.15
+AM_LDFLAGS = $(AM_LFLAGS) -fopenmp
+AUTOCONF = ${SHELL} /home/krishna/research/lem/readgmsh_refactor/missing autoconf
+AUTOHEADER = ${SHELL} /home/krishna/research/lem/readgmsh_refactor/missing autoheader
+AUTOMAKE = ${SHELL} /home/krishna/research/lem/readgmsh_refactor/missing automake-1.15
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -204,15 +202,14 @@ CPPFLAGS =
 CXX = g++
 CXXCPP = g++ -E
 CXXDEPMODE = depmode=gcc3
-CXXFLAGS = -g -O2 -std=gnu++11
+CXXFLAGS = -g -O2
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"lem\" -DPACKAGE_TARNAME=\"lem\" -DPACKAGE_VERSION=\"0.0.1\" -DPACKAGE_STRING=\"lem\ 0.0.1\" -DPACKAGE_BUGREPORT=\"kks32@cam.ac.uk\" -DPACKAGE_URL=\"\" -DPACKAGE=\"lem\" -DVERSION=\"0.0.1\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE__BOOL=1 -DHAVE_CXX11=1 -DSTDC_HEADERS=1 -DHAVE_ALGORITHM=1 -DHAVE_CSTDLIB=1 -DHAVE_CASSERT=1 -DHAVE_MEMORY=1 -DHAVE_STRING=1 -DHAVE_VECTOR=1 -DHAVE_MKDIR=1 -DHAVE_POW=1 -DHAVE_SQRT=1 -DNDEBUG=/\*\*/
+DEFS = -DPACKAGE_NAME=\"lem-readmesh\" -DPACKAGE_TARNAME=\"lem-readmesh\" -DPACKAGE_VERSION=\"0.0.1\" -DPACKAGE_STRING=\"lem-readmesh\ 0.0.1\" -DPACKAGE_BUGREPORT=\"kks32@cam.ac.uk\" -DPACKAGE_URL=\"\" -DPACKAGE=\"lem-readmesh\" -DVERSION=\"0.0.1\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE__BOOL=1 -DHAVE_CXX11=1 -DSTDC_HEADERS=1 -DHAVE_ALGORITHM=1 -DHAVE_CSTDLIB=1 -DHAVE_CASSERT=1 -DHAVE_MEMORY=1 -DHAVE_STRING=1 -DHAVE_VECTOR=1 -DHAVE_MKDIR=1 -DHAVE_POW=1 -DHAVE_SQRT=1 -DNDEBUG=/\*\*/
 DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
 EGREP = /usr/bin/grep -E
-EIGEN_CPPFLAGS = -I/usr/local/include/eigen3
 EXEEXT = 
 GREP = /usr/bin/grep
 HAVE_CXX11 = 1
@@ -225,14 +222,14 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam/missing makeinfo
+MAKEINFO = ${SHELL} /home/krishna/research/lem/readgmsh_refactor/missing makeinfo
 MKDIR_P = /usr/bin/mkdir -p
 OBJEXT = o
-PACKAGE = lem
+PACKAGE = lem-readmesh
 PACKAGE_BUGREPORT = kks32@cam.ac.uk
-PACKAGE_NAME = lem
-PACKAGE_STRING = lem 0.0.1
-PACKAGE_TARNAME = lem
+PACKAGE_NAME = lem-readmesh
+PACKAGE_STRING = lem-readmesh 0.0.1
+PACKAGE_TARNAME = lem-readmesh
 PACKAGE_URL = 
 PACKAGE_VERSION = 0.0.1
 PATH_SEPARATOR = :
@@ -240,12 +237,10 @@ SET_MAKE =
 SHELL = /bin/sh
 STRIP = 
 VERSION = 0.0.1
-VORO_CPPFLAGS = -I/usr/local/include/voro++
-VORO_LDFLAGS = -L/usr/local/lib -lvoro++
-abs_builddir = /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam
-abs_srcdir = /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam
-abs_top_builddir = /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam
-abs_top_srcdir = /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam
+abs_builddir = /home/krishna/research/lem/readgmsh_refactor
+abs_srcdir = /home/krishna/research/lem/readgmsh_refactor
+abs_top_builddir = /home/krishna/research/lem/readgmsh_refactor
+abs_top_srcdir = /home/krishna/research/lem/readgmsh_refactor
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -265,7 +260,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/cbgeo/Desktop/readgmsh_rewrite/rewrite/readgmsh_maryam/install-sh
+install_sh = ${SHELL} /home/krishna/research/lem/readgmsh_refactor/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -288,7 +283,7 @@ top_srcdir = .
 
 # Stop autoconf looking for readme file
 AUTOMAKE_OPTIONS = foreign
-AM_CPPFLAGS = -I include/ $(VORO_CPPFLAGS) $(EIGEN_CPPFLAGS)
+AM_CPPFLAGS = -I include/
 readgmsh_LDADD = $(VORO_LDFLAGS)
 readgmsh_SOURCES = src/main.cc
 all: all-am
