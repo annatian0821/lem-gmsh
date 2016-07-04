@@ -19,7 +19,7 @@ class Surface {
   unsigned surfaceid() const { return surface_id_; }
 
   //! Assign a vector of nodal pointer to the surface
-  void assign_nodes(
+  void assign_vertices(
       const std::vector<std::shared_ptr<Vertex>>& vec_vertices_ptr) {
     vec_vertices_ptr_ = vec_vertices_ptr;
   }
