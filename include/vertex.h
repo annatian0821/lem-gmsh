@@ -11,8 +11,9 @@ const unsigned Dim = 3;
 class Vertex {
  public:
   //! Constructor with coordinates and id
-  Vertex(const unsigned& id, const std::array<double, Dim>& coord)
-      : id_{id}, coord_{coord} {}
+  Vertex(const unsigned& id, const std::array<double, Dim>& coord) : id_{id} {
+    coord_ = coord;
+  }
 
   //! Assign coordinates to the vertex
   void coord(const std::array<double, Dim>& coord) { coord_ = coord; }
