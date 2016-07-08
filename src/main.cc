@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
   auto surface = std::make_shared<Surface>(id);
  
   // creat mesh object and read msh file
-  auto mesh = std::make_shared<Mesh>();
+  std::unique_ptr<Mesh> mesh(new Mesh);
   mesh->read_msh_file("mesh.msh");
 
 }
