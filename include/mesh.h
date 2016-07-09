@@ -6,10 +6,8 @@
 #include "vertex.h"
 
 #include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
 #include <memory>
+#include <sstream>
 #include <vector>
 
 //! Mesh class 
@@ -31,10 +29,10 @@ class Mesh {
  void readKeyword(std::ifstream *file, std::string keyword); 
 
  // Read elements from msh file
- void read_msh_element(const std::string& filename);
+ void read_msh_element(std::ifstream *file); 
  
  // Read vertices from msh file 
- void read_msh_vertex(const std::string& filename);  
+ void read_msh_vertex(std::ifstream *file);  
 
  // Set the element pointer index to element 
  void element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
