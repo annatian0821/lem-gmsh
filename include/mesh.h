@@ -34,6 +34,9 @@ class Mesh {
  // Read vertices from msh file 
  void read_msh_vertex(std::ifstream *file);  
 
+ // Read surfaces from msh file 
+ void read_msh_surface(std::ifstream *file); 
+
  // Set the element pointer index to element 
  void element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
    element_list_ptr_.at(index) = elementptr;
@@ -54,6 +57,25 @@ class Mesh {
   return element_list_ptr_; 
  }   
 
+ // Set the surface pointer index to surface 
+ void surface_ptr(const unsigned index, std::shared_ptr<Surface>& surfaceptr) { 
+   surface_list_ptr_.at(index) = surfaceptr; 
+ } 
+
+ // Add a surface pointer 
+ void surface_ptr(std::shared_ptr<Surface>& surfaceptr) { 
+   surface_list_ptr_.push_back(surfaceptr); 
+ } 
+
+ // Return surface pointer for a given index
+ std::shared_ptr<Surface> surface_ptr(const unsigned index) const { 
+   return surface_list_ptr_.at(index); 
+ } 
+
+ // Return list of surface pointers 
+ std::vector<std::shared_ptr<Surface>> surface_list_ptr() const { 
+   return surface_list_ptr_; 
+ } 
  // Set the vertex pointer index to vertex 
  void vertex_ptr(const unsigned index, std::shared_ptr<Vertex>& vertexptr) {
    vertex_list_ptr_.at(index) = vertexptr;

@@ -11,7 +11,8 @@ void Mesh::read_msh_file(const std::string& filename) {
   } 
   if (file.good()){ 
     read_msh_vertex(&file);  
-    read_msh_element(&file); 
+    read_msh_element(&file);
+    read_msh_surface(&file);  
   } 
 } 
 
@@ -44,7 +45,9 @@ void Mesh::read_msh_element(std::ifstream *file) {
   std::cout << "Number of elements = " << element_no << std::endl; 
   unsigned elementid;
   unsigned temp; 
-  unsigned i = 1; 
+  unsigned type; 
+  unsigned object_id; 
+  unsigned j = 1; 
   unsigned k = 1;  
   std::string line;
   std::array<double, 4> vert_list;  
@@ -56,26 +59,85 @@ void Mesh::read_msh_element(std::ifstream *file) {
     if(line.find('#') == std::string::npos) {
       if (line != "") {
         while (istream.good()) {
-        for (unsigned i = 0; i < 7; ++i) {
+        for (unsigned i = 0; i < 9; ++i) { 
          // Read vertices associated with the element 
-         if (i<=2){
+         if (i == 0){
+           istream >> temp;
+         } else if (i == 1) {  
+           istream >> type; 
+         } else if (i == 2) { 
            istream >> temp; 
+         } else if (i == 3) { 
+           istream >> object_id; 
+         } else if (i == 4) { 
+           istream >> temp;
          } else { 
-           istream >> vert_list.at(i-3);
+           istream >> vert_list.at(i-5); 
          } 
-         }
-        } 
-         std::cout << "vertix list " << vert_list.at(0) << std::endl;
+        }
+        }
+         // temp output for debugging   
+         std::cout << "vertix list " << vert_list.at(2) << std::endl;
          // Create a new element and push it to mesh 
          auto element = std::make_shared<Element>(elementid);
          ++elementid;
          this->element_ptr(element);
-         ++i; 
-         if (i>element_no) {break;};
+         ++j; 
+         if (j > element_no) {break;};
         }
       }
     } 
   } 
+}   
+
+//! Read Surface ID and Type 
+void Mesh::read_msh_surface(std::ifstream *file) { 
+
+  readKeyword(file, "$PhysicalNames"); 
+  unsigned surf_no; 
+  *file >> surf_no; 
+  std::cout << "Number of physical objects = " << surf_no << std::endl;
+  unsigned sid = 0;
+  unsigned stype;  
+  unsigned temp;
+  unsigned j = 1;
+  unsigned k = 1; 
+  bool frac_surf;
+  std::string line;
+  std::string object_name; 
+  while (std::getline(*file, line)) {
+    std::istringstream istream(line);
+    ++k; 
+    if (k > 2) {
+    // to ignore comment line with #
+    if(line.find('#') == std::string::npos) {
+      if (line != "") {
+       while (istream.good()) {
+         for (unsigned i = 0; i < 4; ++i) {
+         // Read coordinates
+         if (i == 0) {
+           istream >> stype; 
+         } else if (i == 1) {
+           istream >> temp;
+         } else { 
+           istream >> object_name; 
+         } 
+         }
+         if (object_name.find("F") == true) { frac_surf = true; }
+         else { frac_surf = false; }    
+       } 
+      }
+      // Temp output for debugging 
+      std::cout << "physical object type " << object_name << " fracture surface  " << frac_surf << std::endl;
+      // Create a new vertex and push it to mesh 
+      auto surface = std::make_shared<Surface>(sid);
+      ++sid;
+      this->surface_ptr(surface);
+      ++j;
+      if (j > surf_no) {break;};
+    }
+    }
+  }
 }   
 
 //! Read vertex ids and coordinates 
@@ -94,20 +156,21 @@ void Mesh::read_msh_vertex(std::ifstream *file) {
   while (std::getline(*file, line)) { 
     std::istringstream istream(line);
     ++k; 
-    if (k>2) {
+    if (k > 2) {
     // to ignore comment line with #
     if(line.find('#') == std::string::npos) {
       if (line != "") {
        while (istream.good()) {
        for (unsigned i = 0; i < 4; ++i) {  
          // Read coordinates
-         if (i==0) { 
+         if (i == 0) { 
            istream >> temp; 
          } else {
-         istream >> vcoord.at(i-1);  
+           istream >> vcoord.at(i-1);  
          }
        }
-       }   
+       }
+      // temp output for debugging    
       std::cout << "coordinates " << vcoord.at(0) << std::endl;  
       // Create a new vertex and push it to mesh 
       auto vertex = std::make_shared<Vertex>(vid, vcoord); 
