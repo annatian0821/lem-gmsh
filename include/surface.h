@@ -37,11 +37,11 @@ class Surface {
   //! Return normal vector of the surface
   std::array<double, Dim> normal_vector() const { return normal_vector_; }
 
-  //! Return surface type (frac or not) 
-  bool frac_surf() {return frac_surface_; }
+  //! Return surface type (frac or not)
+  bool frac_surf() { return frac_surface_; }
 
  private:
-  bool frac_surface_; 
+  bool frac_surface_;
   unsigned surface_id_;
   std::vector<std::shared_ptr<Vertex>> vec_vertices_ptr_;
   std::array<double, Dim> normal_vector_;
