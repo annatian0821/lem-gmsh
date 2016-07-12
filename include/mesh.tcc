@@ -177,8 +177,6 @@ void Mesh::read_msh_vertex(std::ifstream* file) {
                 istream >> vcoord.at(i - 1);
             }
           }
-          // temp output for debugging
-          std::cout << "coordinates " << vcoord << std::endl;
           // Create a new vertex and push it to mesh
           auto vertex = std::make_shared<Vertex>(vid, vcoord);
           ++vid;
