@@ -2,9 +2,9 @@
 #include <memory>
 
 #include "element.h"
+#include "mesh.h"
 #include "surface.h"
 #include "vertex.h"
-#include "mesh.h" 
 
 int main(int argc, char** argv) {
   unsigned id = 0;
@@ -16,9 +16,8 @@ int main(int argc, char** argv) {
   std::cout << "Vertex id: " << vertex->id() << std::endl;
 
   auto surface = std::make_shared<Surface>(id);
- 
+
   // creat mesh object and read msh file
   std::unique_ptr<Mesh> mesh(new Mesh);
   mesh->read_msh_file("mesh.msh");
-
 }
