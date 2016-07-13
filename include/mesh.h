@@ -1,14 +1,16 @@
 #ifndef READMESH_MESH_H_
 #define READMESH_MESH_H_
 
-#include "element.h"
-#include "surface.h"
-#include "vertex.h"
-
 #include <fstream>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <vector>
+
+#include "element.h"
+#include "settings.h"
+#include "surface.h"
+#include "vertex.h"
 
 //! Mesh class
 //! \brief Mesh class for creating all elements
@@ -26,16 +28,16 @@ class Mesh {
   void read_msh_file(const std::string& filename);
 
   // Read keywords from msh file
-  void read_keyword(std::ifstream* file, std::string keyword);
+  void read_keyword(std::ifstream& file, std::string keyword);
 
   // Read elements from msh file
-  void read_msh_element(std::ifstream* file);
+  void read_msh_element(std::ifstream& file);
 
   // Read vertices from msh file
-  void read_msh_vertex(std::ifstream* file);
+  void read_vertices(std::ifstream& file);
 
   // Read surfaces from msh file
-  void read_msh_surface(std::ifstream* file);
+  void read_msh_surface(std::ifstream& file);
 
   // Set the element pointer index to element
   void element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
