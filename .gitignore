@@ -28,4 +28,8 @@ readgmsh
 *.gcda*
 *.gcno*
 *coverage.info*
+*.msh*
+bin/*.msh*
 src/*#
+
+
