@@ -10,19 +10,19 @@ void Mesh::read_msh_file(const std::string& filename) {
     std::exit(EXIT_FAILURE);
   }
   if (file.good()) {
-    read_msh_vertex(&file);
-    read_msh_element(&file);
-    read_msh_surface(&file);
+    read_vertices(file);
+    //  read_msh_element(&file);
+    //  read_msh_surface(&file);
   }
 }
 
 //! Read keywords
-void Mesh::read_keyword(std::ifstream* file, std::string keyword) {
+void Mesh::read_keyword(std::ifstream& file, std::string keyword) {
 
   std::string line;
-  file->clear();
-  file->seekg(0, std::ios::beg);
-  while (std::getline(*file, line)) {
+  file.clear();
+  file.seekg(0, std::ios::beg);
+  while (std::getline(file, line)) {
     if (line != keyword) {
       if (line.find(keyword) != std::string::npos) {
         std::cout << "Cannot find keyword: " << keyword << std::endl;
@@ -37,11 +37,11 @@ void Mesh::read_keyword(std::ifstream* file, std::string keyword) {
 }
 
 //! Read element ids & vertex list
-void Mesh::read_msh_element(std::ifstream* file) {
+void Mesh::read_msh_element(std::ifstream& file) {
 
   read_keyword(file, "$Elements");
   unsigned element_no;
-  *file >> element_no;
+  file >> element_no;
   std::cout << "Number of elements = " << element_no << std::endl;
   unsigned elementid;
   unsigned temp;
@@ -51,7 +51,7 @@ void Mesh::read_msh_element(std::ifstream* file) {
   unsigned k = 1;
   std::string line;
   std::array<double, 4> vert_list;
-  while (std::getline(*file, line)) {
+  while (std::getline(file, line)) {
     std::istringstream istream(line);
     ++k;
     if (k > 2) {
@@ -93,11 +93,11 @@ void Mesh::read_msh_element(std::ifstream* file) {
 }
 
 //! Read Surface ID and Type
-void Mesh::read_msh_surface(std::ifstream* file) {
+void Mesh::read_msh_surface(std::ifstream& file) {
 
   read_keyword(file, "$PhysicalNames");
   unsigned surf_no;
-  *file >> surf_no;
+  file >> surf_no;
   std::cout << "Number of physical objects = " << surf_no << std::endl;
   unsigned sid = 0;
   unsigned stype;
@@ -107,7 +107,7 @@ void Mesh::read_msh_surface(std::ifstream* file) {
   bool frac_surf;
   std::string line;
   std::string object_name;
-  while (std::getline(*file, line)) {
+  while (std::getline(file, line)) {
     std::istringstream istream(line);
     ++k;
     if (k > 2) {
@@ -148,45 +148,47 @@ void Mesh::read_msh_surface(std::ifstream* file) {
   }
 }
 
-//! Read vertex ids and coordinates
-void Mesh::read_msh_vertex(std::ifstream* file) {
-
+//! Read ids and coordinates of vertices
+//! \param[in] file Input file stream object of msh file
+void Mesh::read_vertices(std::ifstream& file) {
   read_keyword(file, "$Nodes");
-  unsigned vert_no;
-  *file >> vert_no;
-  std::cout << "Number of vertices = " << vert_no << std::endl;
-  unsigned vid = 0;
-  unsigned temp;
-  unsigned j = 1;
-  unsigned k = 1;
+
+  // Total number of vertices
+  unsigned nvertices;
+  file >> nvertices;
+  std::cout << "Total number of vertices = " << nvertices << std::endl;
+
+  // Vertex id and coordinates
+  unsigned vid = std::numeric_limits<unsigned>::max();
+  std::array<double, mesh::DIM> vcoordinates;
+
   std::string line;
-  std::array<double, 3> vcoord;
-  while (std::getline(*file, line)) {
+  // Iterate through all vertices in the mesh file
+  for (unsigned i = 0; i < nvertices;) {
+    std::getline(file, line);
     std::istringstream istream(line);
-    ++k;
-    if (k > 2) {
-      // to ignore comment line with #
-      if (line.find('#') == std::string::npos) {
-        if (line != "") {
-          while (istream.good()) {
-            for (unsigned i = 0; i < 4; ++i) {
-              // Read coordinates
-              if (i == 0)
-                istream >> temp;
-              else
-                istream >> vcoord.at(i - 1);
-            }
-          }
-          // Create a new vertex and push it to mesh
-          auto vertex = std::make_shared<Vertex>(vid, vcoord);
-          ++vid;
-          this->vertex_ptr(vertex);
-          ++j;
-          if (j > vert_no) {
-            break;
-          };
-        }
+    if (line.find('#') == std::string::npos && line != "") {
+      // Initialise ids and coordinates
+      vid = std::numeric_limits<unsigned>::max();
+      vcoordinates.fill(std::numeric_limits<double>::quiet_NaN());
+
+      // Read ids and coordinates
+      istream >> vid;
+      for (unsigned j = 0; j < vcoordinates.size(); ++j) {
+        istream >> vcoordinates.at(j);
       }
-    }
+
+      // Create a new vertex and add to list
+      auto vertex = std::make_shared<Vertex>(vid, vcoordinates);
+      this->vertex_ptr(vertex);
+
+      // Increament number of vertex on successful read
+      ++i;
+
+      #ifdef DEBUG
+      std::cout << vertex->id() << std::endl;
+      #endif
+    } else
+      std::cerr << "Invalid entry for node: " << line << std::endl;
   }
 }

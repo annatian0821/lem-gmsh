@@ -31,3 +31,4 @@ readgmsh
 *.msh*
 bin/*.msh*
 src/*#
+*.*swp*
