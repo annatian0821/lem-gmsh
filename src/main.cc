@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #include <iostream>
 #include <memory>
 
@@ -7,8 +9,17 @@
 #include "vertex.h"
 
 int main(int argc, char** argv) {
+  if (argc != 2) {
+    std::cout << "Usage: ./readgmsh /path/to/mesh_file.msh" << std::endl;
+    std::cerr << "Incorrect number of arguments" << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+
+  std::string filename = argv[1];
+
   unsigned id = 0;
   const unsigned Dim = 3;
+
   std::array<double, Dim> coord{0., 0., 0.};
 
   auto vertex = std::make_shared<Vertex>(id, coord);
@@ -19,5 +30,5 @@ int main(int argc, char** argv) {
 
   // creat mesh object and read msh file
   std::unique_ptr<Mesh> mesh(new Mesh);
-  mesh->read_msh_file("mesh.msh");
+  mesh->read_msh_file(filename);
 }
