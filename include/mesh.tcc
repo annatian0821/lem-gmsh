@@ -11,8 +11,8 @@ void Mesh::read_msh_file(const std::string& filename) {
   }
   if (file.good()) {
     read_vertices(file);
-    //  read_msh_element(&file);
-    //  read_msh_surface(&file);
+    read_elements(file);
+    read_surfaces(file);
   }
 }
 
@@ -36,115 +36,144 @@ void Mesh::read_keyword(std::ifstream& file, std::string keyword) {
   }
 }
 
-//! Read element ids & vertex list
-void Mesh::read_msh_element(std::ifstream& file) {
-
+//! Read element ids and list of vertices associated with it
+//! \param[in] file Input file stream object of msh file
+void Mesh::read_elements(std::ifstream& file) {
   read_keyword(file, "$Elements");
-  unsigned element_no;
-  file >> element_no;
-  std::cout << "Number of elements = " << element_no << std::endl;
-  unsigned elementid;
-  unsigned temp;
-  unsigned type;
-  unsigned object_id;
-  unsigned j = 1;
-  unsigned k = 1;
+
+  // Total number of elements
+  unsigned nelements;
+  file >> nelements;
+  // std::cout << "Number of elements = " << element_no << std::endl;
+
+  // Element id, type, object id, and list of vertices
+  unsigned elementid = std::numeric_limits<unsigned>::max();
+  unsigned type, objectid, listsize, temp;
+  std::array<double, 4> vlist;
+
   std::string line;
-  std::array<double, 4> vert_list;
-  while (std::getline(file, line)) {
+  // Iterate through all the elements in the msh file
+  for (unsigned i = 0; i < nelements;) {
+    std::getline(file, line);
     std::istringstream istream(line);
-    ++k;
-    if (k > 2) {
-      // to ignore comment line with #
-      if (line.find('#') == std::string::npos) {
-        if (line != "") {
-          while (istream.good()) {
-            for (unsigned i = 0; i < 9; ++i) {
-              // Read vertices associated with the element
-              if (i == 0) {
-                istream >> temp;
-              } else if (i == 1) {
-                istream >> type;
-              } else if (i == 2) {
-                istream >> temp;
-              } else if (i == 3) {
-                istream >> object_id;
-              } else if (i == 4) {
-                istream >> temp;
-              } else {
-                istream >> vert_list.at(i - 5);
-              }
-            }
+    if (line.find('#') == std::string::npos && line != "") {
+      // Initialize ids and list of vertices
+      elementid = std::numeric_limits<unsigned>::max();
+      vlist.fill(std::numeric_limits<double>::quiet_NaN());
+
+      // Read element ids, type, object id, and list of vertices
+      for (unsigned i = 0; i < 9; ++i) {
+        if (i == 0)
+          istream >> elementid;
+        else if (i == 1) {
+          istream >> type;
+          switch (type) {
+            case 1:
+              listsize = 2;
+              break;
+            case 2:
+              listsize = 3;
+              break;
+            case 4:
+              listsize = 4;
+              break;
+            default:
+              std::cout << "Read type error, type = " << type << std::endl;
           }
-          // temp output for debugging
-          std::cout << "vertix list " << vert_list.at(2) << std::endl;
-          // Create a new element and push it to mesh
-          auto element = std::make_shared<Element>(elementid);
-          ++elementid;
-          this->element_ptr(element);
-          ++j;
-          if (j > element_no) {
-            break;
-          };
-        }
+        } else if (i == 2)
+          istream >> temp;
+        else if (i == 3)
+          istream >> objectid;
+        else if (i == 4)
+          istream >> temp;
+        else
+          istream >> vlist.at(i - 5);
       }
-    }
+
+      // Create a new element and add it to list
+      auto element = std::make_shared<Element>(elementid, vlist, listsize);
+      this->element_ptr(element);
+
+      // Calculate centoid coordinates for an element
+      element->calculate_centroid(elementid, vlist, vertex_list_ptr_, listsize);
+
+#ifdef DEBUG
+      for (unsigned k = 0; k < element_list_ptr_.size(); ++k) {
+        auto list = element_list_ptr_.at(k)->vertex_element_list();
+        for (unsigned j = 0; j < listsize; ++j) std::cout << list.at(j) << " ";
+        std::cout << std::endl;
+      }
+#endif
+
+#ifdef DEBUG
+      // Printing out coordinates for debugging - success -
+      for (unsigned i = 0; i < listsize; ++i) {
+        auto coordinates = vertex_list_ptr_.at(vlist.at(i) - 1)->coord();
+        std::cout << elementid << " " << vlist.at(i) << " " << list_size << " ";
+        for (unsigned j = 0; j < coordinates.size(); ++j) {
+          std::cout << coordinates.at(j) << " ";
+        }
+        std::cout << std::endl;
+      }
+#endif
+
+      // Increment number of element on successful read
+      ++i;
+    } else
+      std::cerr << "Invalid entry for element: " << line << std::endl;
   }
 }
 
-//! Read Surface ID and Type
-void Mesh::read_msh_surface(std::ifstream& file) {
-
+//! Read ids and types of surfaces
+//! \param[in] file Input file stream object of msh file 
+void Mesh::read_surfaces(std::ifstream& file) {
   read_keyword(file, "$PhysicalNames");
-  unsigned surf_no;
-  file >> surf_no;
-  std::cout << "Number of physical objects = " << surf_no << std::endl;
-  unsigned sid = 0;
-  unsigned stype;
-  unsigned temp;
-  unsigned j = 1;
-  unsigned k = 1;
-  bool frac_surf;
+
+  // Total number of surfaces
+  unsigned nsurfaces;
+  file >> nsurfaces;
+  // std::cout << "Number of physical objects = " << surf_no << std::endl;
+
+  // Surface id and type
+  unsigned sid = std::numeric_limits<unsigned>::max();
+  unsigned stype, temp;
+  bool fracsurf;
+  std::string objectname;
+
   std::string line;
-  std::string object_name;
-  while (std::getline(file, line)) {
+  //  Iterate through all surfaces in the msh file
+  for (unsigned i = 0; i < nsurfaces;) {
+    std::getline(file, line);
     std::istringstream istream(line);
-    ++k;
-    if (k > 2) {
-      // to ignore comment line with #
-      if (line.find('#') == std::string::npos) {
-        if (line != "") {
-          while (istream.good()) {
-            for (unsigned i = 0; i < 4; ++i) {
-              // Read coordinates
-              if (i == 0) {
-                istream >> stype;
-              } else if (i == 1) {
-                istream >> temp;
-              } else {
-                istream >> object_name;
-              }
-            }
-            if (object_name.find("F") == true) {
-              frac_surf = true;
-            } else {
-              frac_surf = false;
-            }
-          }
+    if (line.find('#') == std::string::npos && line != "") {
+      // Initialize ids
+      sid = std::numeric_limits<unsigned>::max();
+
+      // Read ids and types
+      for (unsigned i = 0; i < 4; ++i) {
+        // Read coordinates
+        if (i == 0) {
+          istream >> stype;
+        } else if (i == 1) {
+          istream >> sid;
+        } else {
+          istream >> objectname;
         }
-        // Temp output for debugging
-        std::cout << "physical object type " << object_name
-                  << " fracture surface  " << frac_surf << std::endl;
-        // Create a new vertex and push it to mesh
-        auto surface = std::make_shared<Surface>(sid);
-        ++sid;
-        this->surface_ptr(surface);
-        ++j;
-        if (j > surf_no) {
-          break;
-        };
       }
-    }
+      if (objectname.find("F") == true) {
+        fracsurf = true;
+      } else {
+        fracsurf = false;
+      }
+      // Create a new vertex and add it to list
+      auto surface = std::make_shared<Surface>(sid);
+      this->surface_ptr(surface);
+
+      // Increment number of surfaces on successful read
+      ++i;
+
+    } else
+      std::cerr << "Invalid entry for surface: " << line << std::endl;
   }
 }
 
@@ -156,7 +185,7 @@ void Mesh::read_vertices(std::ifstream& file) {
   // Total number of vertices
   unsigned nvertices;
   file >> nvertices;
-  std::cout << "Total number of vertices = " << nvertices << std::endl;
+  //  std::cout << "Total number of vertices = " << nvertices << std::endl;
 
   // Vertex id and coordinates
   unsigned vid = std::numeric_limits<unsigned>::max();
@@ -185,9 +214,9 @@ void Mesh::read_vertices(std::ifstream& file) {
       // Increament number of vertex on successful read
       ++i;
 
-      #ifdef DEBUG
+#ifdef DEBUG
       std::cout << vertex->id() << std::endl;
-      #endif
+#endif
     } else
       std::cerr << "Invalid entry for node: " << line << std::endl;
   }
