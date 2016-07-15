@@ -10,6 +10,9 @@ const unsigned Dim = 3;
 
 class Vertex {
  public:
+  //! Constructor with id
+  explicit Vertex(const unsigned id) : id_{id} {}
+
   //! Constructor with coordinates and id
   Vertex(const unsigned& id, const std::array<double, Dim>& coord) : id_{id} {
     coord_ = coord;
@@ -20,6 +23,9 @@ class Vertex {
 
   //! Return coordinates of the vertex
   std::array<double, Dim> coord() const { return coord_; }
+
+  //! Return coordinates of the vertex with vertex id
+  std::array<double, Dim> coord(const unsigned& id) { return coord_; }
 
   //! Return id of the vertex
   unsigned id() const { return id_; }
