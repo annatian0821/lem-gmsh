@@ -21,7 +21,7 @@ class Mesh {
   Mesh() {
     element_list_ptr_.clear();
     surface_list_ptr_.clear();
-    vertex_list_ptr_.clear();
+    vec_vertex_ptr_.clear();
   }
 
   // Read mesh file exists
@@ -78,33 +78,43 @@ class Mesh {
   std::vector<std::shared_ptr<Surface>> surface_list_ptr() const {
     return surface_list_ptr_;
   }
-  
-  // Set the vertex pointer to vertex for every element 
+
+  // Set the vertex pointer to vertex for every element
   void vertex_element_ptr(std::shared_ptr<Vertex>& vertexptr) {
-    //vertex_element_list_ptr_.at(index) = vertexptr;
-    vertex_element_list_ptr_.push_back(vertexptr); 
+    // vertex_element_list_ptr_.at(index) = vertexptr;
+    vertex_element_list_ptr_.push_back(vertexptr);
   }
 
   // Add a vertex pointer
   void vertex_ptr(std::shared_ptr<Vertex>& vertexptr) {
-    vertex_list_ptr_.push_back(vertexptr);
+    vec_vertex_ptr_.push_back(vertexptr);
   }
 
   // Return vertex pointer for a given index
   std::shared_ptr<Vertex> vertex_ptr(const unsigned index) const {
-    return vertex_list_ptr_.at(index);
+    return vec_vertex_ptr_.at(index);
+  }
+
+  // Return vertex pointer for a given vertex id
+  std::shared_ptr<Vertex> vertex_ptr_at_id(const unsigned id) const {
+    std::shared_ptr<Vertex> ver_ptr = nullptr;
+    for (auto vertex_ptr : vec_vertex_ptr_) {
+      if (vertex_ptr->id() == id)
+        ver_ptr = vertex_ptr;
+    }
+    return ver_ptr;
   }
 
   // Return list of element pointers
-  std::vector<std::shared_ptr<Vertex>> vertex_list_ptr() const {
-    return vertex_list_ptr_;
+  std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr() const {
+    return vec_vertex_ptr_;
   }
 
  private:
   std::vector<std::shared_ptr<Element>> element_list_ptr_;
   std::vector<std::shared_ptr<Surface>> surface_list_ptr_;
-  std::vector<std::shared_ptr<Vertex>> vertex_list_ptr_;
-  std::vector<std::shared_ptr<Vertex>> vertex_element_list_ptr_; 
+  std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr_;
+  std::vector<std::shared_ptr<Vertex>> vertex_element_list_ptr_;
 };
 
 #include "mesh.tcc"

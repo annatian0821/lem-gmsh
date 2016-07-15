@@ -1,7 +1,7 @@
 #ifndef READMESH_ELEMENT_H_
 #define READMESH_ELEMENT_H_
 
-//#include "mesh.h"
+#include "settings.h"
 #include "surface.h"
 #include "vertex.h"
 
@@ -10,80 +10,81 @@
 
 //! Element class
 //! \brief Element for associating element with surfaces and vertices
-
 class Element {
  public:
-  //! Default constructor
-  Element() {}
 
   //! Constructor with element id
-  explicit Element(const unsigned elementid) : elementid_{elementid} {
+  explicit Element(const unsigned id) : id_{id} {
     surface_list_ptr_.clear();
-    vertex_list_ptr_.clear();
+    vec_vertex_ptr_.clear();
   }
 
-  //! Constructor with id, list of vertices, and list size
-  Element(const unsigned& elementid,
-          const std::array<double, 4>& vertex_element_list,
-          const unsigned& listsize)
-      : elementid_{elementid} {
-    vertex_element_list_ = vertex_element_list;
-    listsize_ = listsize;
+  //! Constructor with id and element type
+  Element(const unsigned& id, const unsigned& type) : id_{id}, type_{type} {
+    vec_vertex_ptr_.clear();
+    vec_tags_.clear();
   }
 
   //! Return id of the element
-  unsigned elementid() const { return elementid_; }
-
-  //! Return vertex element list
-  std::array<double, 4> vertex_element_list() const {
-    return vertex_element_list_;
-  }
-
-  //! Return list size
-  unsigned listsize() const { return listsize_; }
+  unsigned id() const { return id_; }
 
   //! set the surface pointer to surface
-  void surface_ptr(const unsigned index, std::shared_ptr<Surface> surf);
+  // void surface_ptr(const unsigned index, std::shared_ptr<Surface> surf);
 
-  //! set the vertex pointer to vertex
-  void vertex_ptr(const unsigned index,
-                  std::vector<std::shared_ptr<Vertex>> vertex_list_ptr,
-                  const unsigned listsize) {
-    vertex_list_ptr_ = vertex_list_ptr;
-    listsize_ = listsize;
+  //! Assign a vertex pointer to an index
+  bool vertex_ptr(const unsigned& index,
+                  std::shared_ptr<Vertex>& vertex_ptr) {
+    if (vertex_ptr) {
+      vec_vertex_ptr_.at(index) = vertex_ptr;
+      return true;
+    } else
+      return false;
   }
 
-  //! Return sufrace pointer for a given index
-  std::shared_ptr<Surface> surface_ptr(const unsigned index) const;
-
-  //! Return vertex pointer for a given index
-  std::shared_ptr<Vertex> vertex_ptr(const unsigned index) const;
-
-  //! Return the vector of surface pointers
-  std::vector<std::shared_ptr<Surface>> surface_list_ptr() const {
-    return surface_list_ptr_;
+  //! Add a vertex pointer
+  //! \TODO Requires check to see if the vertex exists.
+  bool vertex_ptr(std::shared_ptr<Vertex>& vertex_ptr) {
+    vec_vertex_ptr_.push_back(vertex_ptr);
   }
 
-  //! Return the vector of vertex pointers
-  std::vector<std::shared_ptr<Vertex>> vertex_list_ptr() const {
-    return vertex_list_ptr_;
-  }
+  // //! Return sufrace pointer for a given index
+  // std::shared_ptr<Surface> surface_ptr(const unsigned index) const;
 
-  //! Calculate centroid of vertex pointer
-  void calculate_centroid(const unsigned id,
-                          std::array<double, 4> vertex_element_list,
-                          std::vector<std::shared_ptr<Vertex>> vertex_list_ptr,
-                          const unsigned list_size);
+  // //! Return vertex pointer for a given index
+  // std::shared_ptr<Vertex> vertex_ptr(const unsigned index) const;
 
-  //! Add centroid to list
-  void add_centroid(std::array<double, 3>& centroid) { centroid_ = centroid; }
+  // //! Return the vector of surface pointers
+  // std::vector<std::shared_ptr<Surface>> surface_list_ptr() const {
+  //   return surface_list_ptr_;
+  // }
+
+  // //! Return the vector of vertex pointers
+  // std::vector<std::shared_ptr<Vertex>> vertex_list_ptr() const {
+  //   return vertex_list_ptr_;
+  // }
+
+  //! Compute centroid of the element
+  void compute_centroid();
+
+  //! Retrun centroid of the element
+  std::array<double, mesh::DIM> centroid() const { return centroid_; }
+
+  //! Append tag to element
+  void tag(const unsigned& tag) { vec_tags_.push_back(tag); }
 
  private:
-  unsigned elementid_, listsize_;
-  std::array<double, 3> centroid_;
-  std::array<double, 4> vertex_element_list_;
+  //! Element ID
+  unsigned id_;
+  //! Element type
+  unsigned type_;
+  //! Centroid of the element
+  std::array<double, mesh::DIM> centroid_;
+  //! Vector of vertex pointers
+  std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr_;
+  //! Vector of surface pointers
   std::vector<std::shared_ptr<Surface>> surface_list_ptr_;
-  std::vector<std::shared_ptr<Vertex>> vertex_list_ptr_;
+  //! Element tags
+  std::vector<unsigned> vec_tags_;
 };
 
 #include "element.tcc"
