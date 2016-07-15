@@ -34,5 +34,3 @@ src/*#
 *.*swp*
 ./*.geo*
 ./*.msh*
-mult_fracs_coarse.geo
-mesh_2.msh
