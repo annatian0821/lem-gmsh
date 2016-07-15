@@ -3,40 +3,19 @@
 //! Compute the centroid of an element
 void Element::compute_centroid() {
 
-// #ifdef DEBUG
-//   for (unsigned j = 0; j < list_size; ++j) std::cout << vert_list.at(j) << " ";
-//   std::cout << std::endl;
-// #endif
+  centroid_ = {0.};
 
-// #ifdef DEBUG
-//   for (unsigned i = 0; i < list_size; ++i) {
-//     auto coordinates = vertex_list_ptr.at(vert_list.at(i) - 1)->coord();
-//     std::cout << elementid << " " << vert_list.at(i) << " " << list_size << " ";
-//     for (unsigned j = 0; j < coordinates.size(); ++j) {
-//       std::cout << coordinates.at(j) << " ";
-//     }
-//     std::cout << std::endl;
-//   }
-// #endif
+  // centoid calculated successfully
+  for (const auto vertex_ptr : this->vec_vertex_ptr_) {
+    auto coordinates = vertex_ptr->coord();
+    std::transform(centroid_.begin(), centroid_.end(), coordinates.begin(),
+                   centroid_.begin(), std::plus<double>());
+  }
 
-//   std::array<double, 3> centroid = {0.};
+  for (auto& centroid : centroid_) centroid /= vec_vertex_ptr_.size();
 
-//   // centoid calculated successfully
-//   for (unsigned i = 0; i < list_size; ++i) {
-//     auto coordinates = vertex_list_ptr.at(vert_list.at(i) - 1)->coord();
-//     centroid.at(0) += coordinates.at(0);
-//     centroid.at(1) += coordinates.at(1);
-//     centroid.at(2) += coordinates.at(2);
-//   }
-//   centroid.at(0) /= list_size;
-//   centroid.at(1) /= list_size;
-//   centroid.at(2) /= list_size;
-
-//   // Push centroid back to element
-//   this->add_centroid(centroid);
-
-// #ifdef DEBUG
-//   std::cout << elementid << " " << centroid.at(0) << " " << centroid.at(1)
-//             << " " << centroid.at(2) << std::endl;
-// #endif
+#ifdef DEBUG
+  std::cout << this->id() << " " << centroid_.at(0) << " " << centroid_.at(1)
+            << " " << centroid_.at(2) << vec_vertex_ptr_.size() <<  std::endl;
+#endif
 }

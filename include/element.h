@@ -1,28 +1,31 @@
 #ifndef READMESH_ELEMENT_H_
 #define READMESH_ELEMENT_H_
 
+#include <algorithm>
+#include <functional>
+#include <memory>
+#include <vector>
+
 #include "settings.h"
 #include "surface.h"
 #include "vertex.h"
-
-#include <memory>
-#include <vector>
 
 //! Element class
 //! \brief Element for associating element with surfaces and vertices
 class Element {
  public:
-
   //! Constructor with element id
   explicit Element(const unsigned id) : id_{id} {
     surface_list_ptr_.clear();
     vec_vertex_ptr_.clear();
+    centroid_ = {0.};
   }
 
   //! Constructor with id and element type
   Element(const unsigned& id, const unsigned& type) : id_{id}, type_{type} {
     vec_vertex_ptr_.clear();
     vec_tags_.clear();
+    centroid_ = {0.};
   }
 
   //! Return id of the element
@@ -32,8 +35,7 @@ class Element {
   // void surface_ptr(const unsigned index, std::shared_ptr<Surface> surf);
 
   //! Assign a vertex pointer to an index
-  bool vertex_ptr(const unsigned& index,
-                  std::shared_ptr<Vertex>& vertex_ptr) {
+  bool vertex_ptr(const unsigned& index, std::shared_ptr<Vertex>& vertex_ptr) {
     if (vertex_ptr) {
       vec_vertex_ptr_.at(index) = vertex_ptr;
       return true;
