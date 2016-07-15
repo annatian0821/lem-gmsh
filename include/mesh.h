@@ -31,13 +31,13 @@ class Mesh {
   void read_keyword(std::ifstream& file, std::string keyword);
 
   // Read elements from msh file
-  void read_msh_element(std::ifstream& file);
+  void read_elements(std::ifstream& file);
 
   // Read vertices from msh file
   void read_vertices(std::ifstream& file);
 
   // Read surfaces from msh file
-  void read_msh_surface(std::ifstream& file);
+  void read_surfaces(std::ifstream& file);
 
   // Set the element pointer index to element
   void element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
@@ -78,9 +78,11 @@ class Mesh {
   std::vector<std::shared_ptr<Surface>> surface_list_ptr() const {
     return surface_list_ptr_;
   }
-  // Set the vertex pointer index to vertex
-  void vertex_ptr(const unsigned index, std::shared_ptr<Vertex>& vertexptr) {
-    vertex_list_ptr_.at(index) = vertexptr;
+  
+  // Set the vertex pointer to vertex for every element 
+  void vertex_element_ptr(std::shared_ptr<Vertex>& vertexptr) {
+    //vertex_element_list_ptr_.at(index) = vertexptr;
+    vertex_element_list_ptr_.push_back(vertexptr); 
   }
 
   // Add a vertex pointer
@@ -102,6 +104,7 @@ class Mesh {
   std::vector<std::shared_ptr<Element>> element_list_ptr_;
   std::vector<std::shared_ptr<Surface>> surface_list_ptr_;
   std::vector<std::shared_ptr<Vertex>> vertex_list_ptr_;
+  std::vector<std::shared_ptr<Vertex>> vertex_element_list_ptr_; 
 };
 
 #include "mesh.tcc"
