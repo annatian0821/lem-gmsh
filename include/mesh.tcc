@@ -55,6 +55,7 @@ void Mesh::read_elements(std::ifstream& file) {
   // Total number of elements
   unsigned nelements;
   istream >> nelements;
+  std::cout << "Total number of elements = " << nelements << std::endl;
 
   //! Element ID
   unsigned element_id = std::numeric_limits<unsigned>::max();
@@ -93,16 +94,15 @@ void Mesh::read_elements(std::ifstream& file) {
       if (search != mesh::map_element_type_nodes.end())
         nnodes = search->second;
 
-      std::cout << "Element: " << element_id;
       if (nnodes !=  std::numeric_limits<unsigned>::max()) {
         for (unsigned nodes = 0; nodes < nnodes; ++nodes) {
           istream >> nid;
           std::shared_ptr<Vertex> vptr = this->vertex_ptr_at_id(nid);
-          if (vptr) vertex_ptr(vptr);
-          std::cout << " " << vptr->id();
+          if (vptr) element->vertex_ptr(vptr);
         }
-        std::cout << std::endl;
       }
+      element->compute_centroid();
+      this->element_ptr(element);
     } else
       std::cerr << "Invalid entry for node: " << line << std::endl;
   }
@@ -173,16 +173,19 @@ void Mesh::read_surfaces(std::ifstream& file) {
 void Mesh::read_vertices(std::ifstream& file) {
   read_keyword(file, "$Nodes");
 
+  std::string line;
+  std::getline(file, line);
+  std::istringstream istream(line);
+
   // Total number of vertices
   unsigned nvertices;
-  file >> nvertices;
-  //  std::cout << "Total number of vertices = " << nvertices << std::endl;
+  istream >> nvertices;
+  std::cout << "Total number of vertices = " << nvertices << std::endl;
 
   // Vertex id and coordinates
   unsigned vid = std::numeric_limits<unsigned>::max();
   std::array<double, mesh::DIM> vcoordinates;
 
-  std::string line;
   // Iterate through all vertices in the mesh file
   for (unsigned i = 0; i < nvertices;) {
     std::getline(file, line);
