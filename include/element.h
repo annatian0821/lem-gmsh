@@ -2,6 +2,8 @@
 #define READMESH_ELEMENT_H_
 
 #include <algorithm>
+#include <iomanip>
+#include <fstream>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -22,7 +24,7 @@ class Element {
   }
 
   //! Constructor with id and element type
-  Element(const unsigned& id, const unsigned& type) : id_{id}, type_{type} {
+  Element(const unsigned& id, const unsigned& type, const unsigned& object_id) : id_{id}, type_{type}, object_id_{object_id} {
     vec_vertex_ptr_.clear();
     vec_tags_.clear();
     centroid_ = {0.};
@@ -30,6 +32,9 @@ class Element {
 
   //! Return id of the element
   unsigned id() const { return id_; }
+
+  //! Return type of element 
+  unsigned type() const { return type_; } 
 
   //! set the surface pointer to surface
   // void surface_ptr(const unsigned index, std::shared_ptr<Surface> surf);
@@ -49,21 +54,16 @@ class Element {
     vec_vertex_ptr_.push_back(vertex_ptr);
   }
 
-  // //! Return sufrace pointer for a given index
-  // std::shared_ptr<Surface> surface_ptr(const unsigned index) const;
+  //! Return list of vertex pointers
+  std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr() {
+    return vec_vertex_ptr_;
+  }
 
-  // //! Return vertex pointer for a given index
-  // std::shared_ptr<Vertex> vertex_ptr(const unsigned index) const;
+  // Add a vertex id
+  void add_vid(const unsigned id) { vlist_.push_back(id); }
 
-  // //! Return the vector of surface pointers
-  // std::vector<std::shared_ptr<Surface>> surface_list_ptr() const {
-  //   return surface_list_ptr_;
-  // }
-
-  // //! Return the vector of vertex pointers
-  // std::vector<std::shared_ptr<Vertex>> vertex_list_ptr() const {
-  //   return vertex_list_ptr_;
-  // }
+  // Returt list of vertex ids
+  std::vector<unsigned> vert_list() { return vlist_; }
 
   //! Compute centroid of the element
   void compute_centroid();
@@ -73,6 +73,12 @@ class Element {
 
   //! Append tag to element
   void tag(const unsigned& tag) { vec_tags_.push_back(tag); }
+
+  //! Return tags
+  std::vector<unsigned> vec_tags() { return vec_tags_; }
+
+  //! Return object id
+  unsigned objectid() { return object_id_; }
 
  private:
   //! Element ID
@@ -87,6 +93,10 @@ class Element {
   std::vector<std::shared_ptr<Surface>> surface_list_ptr_;
   //! Element tags
   std::vector<unsigned> vec_tags_;
+  //! Object id
+  unsigned object_id_;
+  //! List of vertices
+  std::vector<unsigned> vlist_;
 };
 
 #include "element.tcc"

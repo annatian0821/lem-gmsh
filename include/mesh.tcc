@@ -12,7 +12,7 @@ void Mesh::read_msh_file(const std::string& filename) {
   if (file.good()) {
     read_vertices(file);
     read_elements(file);
-    // read_surfaces(file);
+    read_surfaces(file);
   }
 }
 
@@ -25,12 +25,16 @@ void Mesh::read_keyword(std::ifstream& file, std::string keyword) {
   while (std::getline(file, line)) {
     if (line != keyword) {
       if (line.find(keyword) != std::string::npos) {
+#ifdef DEBUG
         std::cout << "Cannot find keyword: " << keyword << std::endl;
         std::cout << "Line read -" << line << '-' << std::endl;
+#endif
         break;
       };
     } else {
+#ifdef DEBUG
       std::cout << "Read keyword -" << keyword << "- successfully" << std::endl;
+#endif
       break;
     }
   }
@@ -68,6 +72,12 @@ void Mesh::read_elements(std::ifstream& file) {
   unsigned tag = std::numeric_limits<unsigned>::max();
   //! Node id
   unsigned nid = std::numeric_limits<unsigned>::max();
+  //! Object id
+  unsigned object_id = std::numeric_limits<unsigned>::max();
+
+  // Opening nodes.txt file to print centroid coordinates
+  std::ofstream nodestream;
+  nodestream.open("nodes.txt", std::ofstream::out | std::ostream::trunc);
 
   // Iterate through all vertices in the mesh file
   for (unsigned i = 0; i < nelements; ++i) {
@@ -78,12 +88,14 @@ void Mesh::read_elements(std::ifstream& file) {
       istream >> element_id;
       istream >> element_type;
       istream >> ntags;
+      istream >> object_id;
 
       // Create an element pointer
-      auto element = std::make_shared<Element>(element_id, element_type);
+      auto element =
+          std::make_shared<Element>(element_id, element_type, object_id);
 
       // Read element tags
-      for (unsigned j = 0; j < ntags; ++j) {
+      for (unsigned j = 0; j < ntags - 1; ++j) {
         istream >> tag;
         element->tag(tag);
       }
@@ -91,75 +103,145 @@ void Mesh::read_elements(std::ifstream& file) {
       // Find the number of nodes for an element type
       nnodes = std::numeric_limits<unsigned>::max();
       auto search = mesh::map_element_type_nodes.find(element_type);
-      if (search != mesh::map_element_type_nodes.end())
-        nnodes = search->second;
+      if (search != mesh::map_element_type_nodes.end()) nnodes = search->second;
 
-      if (nnodes !=  std::numeric_limits<unsigned>::max()) {
+      if (nnodes != std::numeric_limits<unsigned>::max()) {
         for (unsigned nodes = 0; nodes < nnodes; ++nodes) {
           istream >> nid;
+          element->add_vid(nid);
           std::shared_ptr<Vertex> vptr = this->vertex_ptr_at_id(nid);
-          if (vptr) element->vertex_ptr(vptr);
+          if (vptr) element->vertex_ptr(vptr); 
         }
       }
-      element->compute_centroid();
+
+      // Calculate centroid and print coordinates into nodes.txt
+      if (element_type == 4) {
+        element->compute_centroid();
+        std::array<double, 3> centroid_ = element->centroid();
+        nodestream << std::left << std::setw(10) << centroid_.at(0) << '\t'
+                   << std::setw(10) << centroid_.at(1) << '\t' << std::setw(10)
+                   << centroid_.at(2) << std::endl;
+      }
       this->element_ptr(element);
     } else
       std::cerr << "Invalid entry for node: " << line << std::endl;
   }
+  nodestream.close();
 }
-
 
 //! Read ids and types of surfaces
 //! \param[in] file Input file stream object of msh file
 void Mesh::read_surfaces(std::ifstream& file) {
   read_keyword(file, "$PhysicalNames");
 
+  std::string line;
+  std::getline(file, line);
+  std::istringstream istream(line);
+
   // Total number of surfaces
   unsigned nsurfaces;
-  file >> nsurfaces;
-  // std::cout << "Number of physical objects = " << surf_no << std::endl;
+  istream >> nsurfaces;
+  std::cout << "Number of physical objects = " << nsurfaces << std::endl;
 
-  // Surface id and type
-  unsigned sid = std::numeric_limits<unsigned>::max();
-  unsigned stype, temp;
-  bool fracsurf;
-  std::string objectname;
+  //! Open up fracture.txt file
+  std::ofstream fracstream;
+  fracstream.open("fracture.txt", std::ofstream::out | std::ostream::trunc);
 
-  std::string line;
-  //  Iterate through all surfaces in the msh file
-  for (unsigned i = 0; i < nsurfaces;) {
+  //! Surface ID
+  unsigned surface_id = std::numeric_limits<unsigned>::max();
+  //! Surface type
+  unsigned surface_type = std::numeric_limits<unsigned>::max();
+  //! Surface (object) name
+  std::string object_name;
+  //! List of element ids associated with a fracture object
+  std::vector<unsigned> element_list;
+  //! List of vertex ids
+  std::vector<unsigned> vertex_id_list;
+
+  // Convert number of surfaces into string to initialize object_name
+  std::ostringstream convert;
+  convert << nsurfaces;
+  object_name = convert.str();
+
+  // Iterate through all surfaces in the mesh file
+  for (unsigned i = 0; i < nsurfaces; ++i) {
+    read_keyword(file, object_name);
+    std::string line;
     std::getline(file, line);
     std::istringstream istream(line);
-    if (line.find('#') == std::string::npos && line != "") {
-      // Initialize ids
-      sid = std::numeric_limits<unsigned>::max();
 
-      // Read ids and types
-      for (unsigned i = 0; i < 4; ++i) {
-        // Read coordinates
-        if (i == 0) {
-          istream >> stype;
-        } else if (i == 1) {
-          istream >> sid;
-        } else {
-          istream >> objectname;
+    if (line.find('#') == std::string::npos && line != "") {
+      // Read surface type, ids, and names
+      istream >> surface_type;
+      istream >> surface_id;
+      istream >> object_name;
+
+      // Create a surface pointer
+      auto surface = std::make_shared<Surface>(surface_id);
+      surface->add_sid(surface_id);
+
+      // Find if its fracture surface or not
+      auto find = mesh::find_fracture_surface(object_name);
+
+      // Get fracture pairs using pointers
+      if (find == true) {
+        // Get list of element pointers for surface_id
+        auto vec_elemtptr = this->find_element_id(surface_id);
+        // Get list of vertex pointers for every element
+        for (const auto& elemptr : vec_elemtptr) {
+          auto vec_vertptr = elemptr->vec_vertex_ptr();
+          auto eid = elemptr->id();
+          // Get list of vertex ids (int) for every element
+          vertex_id_list.clear();
+          for (const auto& vtr : vec_vertptr) {
+            auto vid = vtr->id();
+            vertex_id_list.push_back(vid);
+          }
+
+          // Print fracture pairs
+          this->frac_pairs(eid, vertex_id_list);
+        auto fpair = this->return_frac_pair();    
+          fracstream << fpair.at(0) << " " << fpair.at(1) << std::endl;
         }
       }
-      if (objectname.find("F") == true) {
-        fracsurf = true;
-      } else {
-        fracsurf = false;
-      }
-      // Create a new vertex and add it to list
-      auto surface = std::make_shared<Surface>(sid);
       this->surface_ptr(surface);
-
-      // Increment number of surfaces on successful read
-      ++i;
-
     } else
-      std::cerr << "Invalid entry for surface: " << line << std::endl;
+      std::cerr << "Invalid entry for node: " << line << std::endl;
   }
+  fracstream.close();
+}
+
+//! Find fracture pairs
+void Mesh::frac_pairs(unsigned eid, std::vector<unsigned> vfraclist) {
+
+  std::vector<unsigned> vlist, frac_pair;
+  frac_pair.clear();
+  unsigned final_node_id = 0;
+
+  auto elem_ptrs = this->element_list_ptr();
+  for (const auto& eptr : elem_ptrs) {
+    auto element_id = eptr->id();
+    auto element_type = eptr->type();
+
+    if (element_id != eid && element_type == 4) {
+      vlist.clear();
+      auto vert_ptr = eptr->vec_vertex_ptr();
+      for (const auto& vtr : vert_ptr) {
+        auto vid = vtr->id();
+        vlist.push_back(vid);
+      }
+      std::sort(vfraclist.begin(), vfraclist.end());
+      std::sort(vlist.begin(), vlist.end());
+      std::vector<unsigned> vintersect;
+      std::set_intersection(vfraclist.begin(), vfraclist.end(), vlist.begin(),
+                            vlist.end(), std::back_inserter(vintersect));
+      if (vintersect.size() == 3) {
+        frac_pair.push_back(final_node_id);
+      }
+      ++final_node_id;
+    }
+  }
+  this->assign_frac_pair(frac_pair);
 }
 
 //! Read ids and coordinates of vertices

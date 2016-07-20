@@ -1,7 +1,10 @@
 #ifndef READMESH_MESH_H_
 #define READMESH_MESH_H_
 
+#include <algorithm>
 #include <fstream>
+#include <iterator>
+#include <iostream>
 #include <limits>
 #include <memory>
 #include <sstream>
@@ -79,12 +82,6 @@ class Mesh {
     return surface_list_ptr_;
   }
 
-  // Set the vertex pointer to vertex for every element
-  void vertex_element_ptr(std::shared_ptr<Vertex>& vertexptr) {
-    // vertex_element_list_ptr_.at(index) = vertexptr;
-    vertex_element_list_ptr_.push_back(vertexptr);
-  }
-
   // Add a vertex pointer
   void vertex_ptr(std::shared_ptr<Vertex>& vertexptr) {
     vec_vertex_ptr_.push_back(vertexptr);
@@ -99,22 +96,47 @@ class Mesh {
   std::shared_ptr<Vertex> vertex_ptr_at_id(const unsigned id) const {
     std::shared_ptr<Vertex> ver_ptr = nullptr;
     for (auto vertex_ptr : vec_vertex_ptr_) {
-      if (vertex_ptr->id() == id)
-        ver_ptr = vertex_ptr;
+      if (vertex_ptr->id() == id) ver_ptr = vertex_ptr;
     }
     return ver_ptr;
   }
 
-  // Return list of element pointers
+  // Return list of vertex pointers
   std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr() const {
     return vec_vertex_ptr_;
+  }
+
+  // Return list of element ids for a given fracture surface id
+  void get_element_ids_per_sid(std::ifstream& file, const unsigned sid);
+ 
+  // Frac pairs
+  void frac_pairs(const unsigned element_id, const std::vector<unsigned> vlist);
+
+  // Add frac pair
+  void assign_frac_pair(const std::vector<unsigned> frac_pair) {
+    frac_pair_ = frac_pair;
+  }
+
+  // Return frac pair
+  std::vector<unsigned> return_frac_pair() { return frac_pair_; }
+
+  // Find list of element pointers for a given surface id
+  std::vector<std::shared_ptr<Element>> find_element_id(
+      const unsigned object_id) const {
+    std::vector<std::shared_ptr<Element>> vec_elem_ptr; 
+    for (auto element_ptr : element_list_ptr_) {
+      if (element_ptr->objectid() == object_id) {
+        vec_elem_ptr.push_back(element_ptr);
+      }
+    }
+    return vec_elem_ptr;
   }
 
  private:
   std::vector<std::shared_ptr<Element>> element_list_ptr_;
   std::vector<std::shared_ptr<Surface>> surface_list_ptr_;
   std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr_;
-  std::vector<std::shared_ptr<Vertex>> vertex_element_list_ptr_;
+  std::vector<unsigned> frac_pair_;
 };
 
 #include "mesh.tcc"

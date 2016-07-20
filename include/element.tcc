@@ -14,8 +14,15 @@ void Element::compute_centroid() {
 
   for (auto& centroid : centroid_) centroid /= vec_vertex_ptr_.size();
 
+// Printing centroid data in nodes.txt
+// nodestream << std::left << std::setw(10) << centroid_.at(0) << '\t'
+//           << std::setw(10) << centroid_.at(1) << '\t' << std::setw(10)
+//           << centroid_.at(2) << std::endl;
+
 #ifdef DEBUG
   std::cout << this->id() << " " << centroid_.at(0) << " " << centroid_.at(1)
-            << " " << centroid_.at(2) << vec_vertex_ptr_.size() <<  std::endl;
+            << " " << centroid_.at(2) << vec_vertex_ptr_.size() << std::endl;
 #endif
 }
+
+
