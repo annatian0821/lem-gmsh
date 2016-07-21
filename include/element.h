@@ -36,9 +36,6 @@ class Element {
   //! Return type of element 
   unsigned type() const { return type_; } 
 
-  //! set the surface pointer to surface
-  // void surface_ptr(const unsigned index, std::shared_ptr<Surface> surf);
-
   //! Assign a vertex pointer to an index
   bool vertex_ptr(const unsigned& index, std::shared_ptr<Vertex>& vertex_ptr) {
     if (vertex_ptr) {
