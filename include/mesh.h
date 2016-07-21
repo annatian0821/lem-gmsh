@@ -108,7 +108,7 @@ class Mesh {
 
   // Return list of element ids for a given fracture surface id
   void get_element_ids_per_sid(std::ifstream& file, const unsigned sid);
- 
+
   // Frac pairs
   void frac_pairs(const unsigned element_id, const std::vector<unsigned> vlist);
 
@@ -123,13 +123,21 @@ class Mesh {
   // Find list of element pointers for a given surface id
   std::vector<std::shared_ptr<Element>> find_element_id(
       const unsigned object_id) const {
-    std::vector<std::shared_ptr<Element>> vec_elem_ptr; 
+    std::vector<std::shared_ptr<Element>> vec_elem_ptr;
     for (auto element_ptr : element_list_ptr_) {
       if (element_ptr->objectid() == object_id) {
         vec_elem_ptr.push_back(element_ptr);
       }
     }
     return vec_elem_ptr;
+  }
+
+  //! Identify fracture surface
+  bool find_fracture_surface(const std::string object_name) {
+    if (object_name.find("Fracture") == true)
+      return true;
+    else
+      return false;
   }
 
  private:

@@ -38,18 +38,11 @@ class Surface {
   //! Return surface type (frac or not)
   bool frac_surf() { return frac_surface_; }
 
-  //! Find frac pairs
-  void frac_pair();
-
-  // Add a vertex id
-  void add_sid(const unsigned id) { slist_.push_back(id); }
-
  private:
   bool frac_surface_;
   unsigned surface_id_;
   std::vector<std::shared_ptr<Vertex>> vec_vertices_ptr_;
   std::array<double, Dim> normal_vector_;
-  std::vector<unsigned> slist_;
 };
 
 #endif  // READMESH_SURFACE_H_

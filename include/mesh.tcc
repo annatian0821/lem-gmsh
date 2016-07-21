@@ -110,7 +110,7 @@ void Mesh::read_elements(std::ifstream& file) {
           istream >> nid;
           element->add_vid(nid);
           std::shared_ptr<Vertex> vptr = this->vertex_ptr_at_id(nid);
-          if (vptr) element->vertex_ptr(vptr); 
+          if (vptr) element->vertex_ptr(vptr);
         }
       }
 
@@ -178,10 +178,9 @@ void Mesh::read_surfaces(std::ifstream& file) {
 
       // Create a surface pointer
       auto surface = std::make_shared<Surface>(surface_id);
-      surface->add_sid(surface_id);
 
       // Find if its fracture surface or not
-      auto find = mesh::find_fracture_surface(object_name);
+      auto find = this->find_fracture_surface(object_name);
 
       // Get fracture pairs using pointers
       if (find == true) {
@@ -200,7 +199,7 @@ void Mesh::read_surfaces(std::ifstream& file) {
 
           // Print fracture pairs
           this->frac_pairs(eid, vertex_id_list);
-        auto fpair = this->return_frac_pair();    
+          auto fpair = this->return_frac_pair();
           fracstream << fpair.at(0) << " " << fpair.at(1) << std::endl;
         }
       }
@@ -297,3 +296,5 @@ void Mesh::read_vertices(std::ifstream& file) {
       std::cerr << "Invalid entry for node: " << line << std::endl;
   }
 }
+
+

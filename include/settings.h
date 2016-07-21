@@ -15,11 +15,5 @@ std::map<unsigned, unsigned> map_element_type_nodes{
     {4, 4}   // 4-node tetrahedron
 };
 
-//! Identify fracture surface
-bool find_fracture_surface(const std::string object_name) {
-  if (object_name.find("Fracture") == true) 
-    return true;
-    else return false;
-  };
 }
 #endif  // READMESH_SETTINGS_H_

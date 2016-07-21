@@ -54,16 +54,16 @@ class Element {
     vec_vertex_ptr_.push_back(vertex_ptr);
   }
 
-  //! Return list of vertex pointers
+  //! Return list of vertex pointers associated with the element
   std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr() {
     return vec_vertex_ptr_;
   }
 
   // Add a vertex id
-  void add_vid(const unsigned id) { vlist_.push_back(id); }
+  void add_vid(const unsigned id) { vec_vertices_.push_back(id); }
 
   // Returt list of vertex ids
-  std::vector<unsigned> vert_list() { return vlist_; }
+  std::vector<unsigned> vert_list() { return vec_vertices_; }
 
   //! Compute centroid of the element
   void compute_centroid();
@@ -96,7 +96,7 @@ class Element {
   //! Object id
   unsigned object_id_;
   //! List of vertices
-  std::vector<unsigned> vlist_;
+  std::vector<unsigned> vec_vertices_;
 };
 
 #include "element.tcc"
