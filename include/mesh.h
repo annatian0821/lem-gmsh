@@ -22,8 +22,8 @@ class Mesh {
  public:
   //! Default constructor
   Mesh() {
-    element_list_ptr_.clear();
-    surface_list_ptr_.clear();
+    vec_element_ptr_.clear();
+    vec_surface_ptr_.clear();
     vec_vertex_ptr_.clear();
   }
 
@@ -45,7 +45,7 @@ class Mesh {
   // Set the element pointer index to element
   bool element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
     if (elementptr) {
-      element_list_ptr_.at(index) = elementptr;
+      vec_element_ptr_.at(index) = elementptr;
       return true;
     } else
       return false;
@@ -54,10 +54,10 @@ class Mesh {
   // Add an element pointer
   bool element_ptr(std::shared_ptr<Element>& elementptr) {
     // Check if the vertex exists and is not null before adding
-    if ((std::find(std::begin(element_list_ptr_), std::end(element_list_ptr_),
-                   elementptr) == std::end(element_list_ptr_)) &&
+    if ((std::find(std::begin(vec_element_ptr_), std::end(vec_element_ptr_),
+                   elementptr) == std::end(vec_element_ptr_)) &&
         (elementptr != nullptr)) {
-      element_list_ptr_.push_back(elementptr);
+      vec_element_ptr_.push_back(elementptr);
       return true;
     } else
       return false;
@@ -65,32 +65,32 @@ class Mesh {
 
   // Return element pointer for a given index
   std::shared_ptr<Element> element_ptr(const unsigned index) const {
-    return element_list_ptr_.at(index);
+    return vec_element_ptr_.at(index);
   }
 
   // Return list of element pointers
-  std::vector<std::shared_ptr<Element>> element_list_ptr() const {
-    return element_list_ptr_;
+  std::vector<std::shared_ptr<Element>> vec_element_ptr() const {
+    return vec_element_ptr_;
   }
 
   // Set the surface pointer index to surface
   void surface_ptr(const unsigned index, std::shared_ptr<Surface>& surfaceptr) {
-    surface_list_ptr_.at(index) = surfaceptr;
+    vec_surface_ptr_.at(index) = surfaceptr;
   }
 
   // Add a surface pointer
   void surface_ptr(std::shared_ptr<Surface>& surfaceptr) {
-    surface_list_ptr_.push_back(surfaceptr);
+    vec_surface_ptr_.push_back(surfaceptr);
   }
 
   // Return surface pointer for a given index
   std::shared_ptr<Surface> surface_ptr(const unsigned index) const {
-    return surface_list_ptr_.at(index);
+    return vec_surface_ptr_.at(index);
   }
 
   // Return list of surface pointers
-  std::vector<std::shared_ptr<Surface>> surface_list_ptr() const {
-    return surface_list_ptr_;
+  std::vector<std::shared_ptr<Surface>> vec_surface_ptr() const {
+    return vec_surface_ptr_;
   }
 
   // Add a vertex pointer
@@ -135,7 +135,7 @@ class Mesh {
   std::vector<std::shared_ptr<Element>> find_element_id(
       const unsigned object_id) const {
     std::vector<std::shared_ptr<Element>> vec_elem_ptr;
-    for (auto element_ptr : element_list_ptr_) {
+    for (auto element_ptr : vec_element_ptr_) {
       if (element_ptr->objectid() == object_id) {
         vec_elem_ptr.push_back(element_ptr);
       }
@@ -152,12 +152,9 @@ class Mesh {
   }
 
  private:
-  std::vector<std::shared_ptr<Element>> element_list_ptr_;
-  std::vector<std::shared_ptr<Surface>> surface_list_ptr_;
+  std::vector<std::shared_ptr<Element>> vec_element_ptr_;
+  std::vector<std::shared_ptr<Surface>> vec_surface_ptr_;
   std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr_;
   std::vector<unsigned> frac_pair_;
 };
-
-#include "mesh.tcc"
-
 #endif  // READMESH_MESH_H_

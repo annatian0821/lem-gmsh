@@ -102,7 +102,4 @@ class Element {
   //! List of vertices
   std::vector<unsigned> vec_vertices_;
 };
-
-#include "element.tcc"
-
 #endif  // READMESH_ELEMENT_H_

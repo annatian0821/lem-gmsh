@@ -13,4 +13,7 @@ readgmsh_LDADD = $(VORO_LDFLAGS)
 # Main Program 
 bin_PROGRAMS 	 = readgmsh
 
-readgmsh_SOURCES =  src/main.cc
+readgmsh_SOURCES =  src/element.cc \
+            		    src/settings.cc \
+                    src/mesh.cc \
+		                src/main.cc
