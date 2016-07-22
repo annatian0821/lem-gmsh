@@ -217,8 +217,7 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned> vfraclist) {
   frac_pair.clear();
   unsigned final_node_id = 0;
 
-  auto elem_ptrs = this->vec_element_ptr();
-  for (const auto& eptr : elem_ptrs) {
+  for (const auto& eptr : vec_element_ptr_) {
     auto element_id = eptr->id();
     auto element_type = eptr->type();
 

@@ -42,7 +42,12 @@ class Mesh {
   // Read surfaces from msh file
   void read_surfaces(std::ifstream& file);
 
-  // Set the element pointer index to element
+  // Add a vertex pointer
+  void vertex_ptr(std::shared_ptr<Vertex>& vertexptr) {
+    vec_vertex_ptr_.push_back(vertexptr);
+  }
+
+  //! Assign the element pointer index to element
   bool element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
     if (elementptr) {
       vec_element_ptr_.at(index) = elementptr;
@@ -51,7 +56,18 @@ class Mesh {
       return false;
   }
 
-  // Add an element pointer
+  //! Assign a surface pointer at a given index
+  void surface_ptr(const unsigned& index,
+                   std::shared_ptr<Surface>& surfaceptr) {
+    vec_surface_ptr_.at(index) = surfaceptr;
+  }
+
+  //! Append a surface pointer
+  void surface_ptr(std::shared_ptr<Surface>& surfaceptr) {
+    vec_surface_ptr_.push_back(surfaceptr);
+  }
+
+  //! Add an element pointer
   bool element_ptr(std::shared_ptr<Element>& elementptr) {
     // Check if the vertex exists and is not null before adding
     if ((std::find(std::begin(vec_element_ptr_), std::end(vec_element_ptr_),
@@ -62,63 +78,6 @@ class Mesh {
     } else
       return false;
   }
-
-  // Return element pointer for a given index
-  std::shared_ptr<Element> element_ptr(const unsigned index) const {
-    return vec_element_ptr_.at(index);
-  }
-
-  // Return list of element pointers
-  std::vector<std::shared_ptr<Element>> vec_element_ptr() const {
-    return vec_element_ptr_;
-  }
-
-  // Set the surface pointer index to surface
-  void surface_ptr(const unsigned index, std::shared_ptr<Surface>& surfaceptr) {
-    vec_surface_ptr_.at(index) = surfaceptr;
-  }
-
-  // Add a surface pointer
-  void surface_ptr(std::shared_ptr<Surface>& surfaceptr) {
-    vec_surface_ptr_.push_back(surfaceptr);
-  }
-
-  // Return surface pointer for a given index
-  std::shared_ptr<Surface> surface_ptr(const unsigned index) const {
-    return vec_surface_ptr_.at(index);
-  }
-
-  // Return list of surface pointers
-  std::vector<std::shared_ptr<Surface>> vec_surface_ptr() const {
-    return vec_surface_ptr_;
-  }
-
-  // Add a vertex pointer
-  void vertex_ptr(std::shared_ptr<Vertex>& vertexptr) {
-    vec_vertex_ptr_.push_back(vertexptr);
-  }
-
-  // Return vertex pointer for a given index
-  std::shared_ptr<Vertex> vertex_ptr(const unsigned index) const {
-    return vec_vertex_ptr_.at(index);
-  }
-
-  // Return vertex pointer for a given vertex id
-  std::shared_ptr<Vertex> vertex_ptr_at_id(const unsigned id) const {
-    std::shared_ptr<Vertex> ver_ptr = nullptr;
-    for (auto vertex_ptr : vec_vertex_ptr_) {
-      if (vertex_ptr->id() == id) ver_ptr = vertex_ptr;
-    }
-    return ver_ptr;
-  }
-
-  // Return list of vertex pointers
-  std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr() const {
-    return vec_vertex_ptr_;
-  }
-
-  // Return list of element ids for a given fracture surface id
-  void get_element_ids_per_sid(std::ifstream& file, const unsigned sid);
 
   // Frac pairs
   void frac_pairs(const unsigned element_id, const std::vector<unsigned> vlist);
@@ -152,8 +111,35 @@ class Mesh {
   }
 
  private:
+  // Return the vertex pointer for a given index
+  std::shared_ptr<Vertex> vertex_ptr(const unsigned index) const {
+    return vec_vertex_ptr_.at(index);
+  }
+
+  // Return the vertex pointer for a given vertex id
+  std::shared_ptr<Vertex> vertex_ptr_at_id(const unsigned id) const {
+    std::shared_ptr<Vertex> ver_ptr = nullptr;
+    for (auto vertex_ptr : vec_vertex_ptr_) {
+      if (vertex_ptr->id() == id) ver_ptr = vertex_ptr;
+    }
+    return ver_ptr;
+  }
+
+  // Return the surface pointer for a given index
+  std::shared_ptr<Surface> surface_ptr(const unsigned index) const {
+    return vec_surface_ptr_.at(index);
+  }
+
+  // Return the element pointer for a given index
+  std::shared_ptr<Element> element_ptr(const unsigned index) const {
+    return vec_element_ptr_.at(index);
+  }
+
+  //! Vector of element pointers
   std::vector<std::shared_ptr<Element>> vec_element_ptr_;
+  //! Vector of surface pointers
   std::vector<std::shared_ptr<Surface>> vec_surface_ptr_;
+  //! Vector of vertex pointers
   std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr_;
   std::vector<unsigned> frac_pair_;
 };
