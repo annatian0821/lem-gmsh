@@ -2,9 +2,9 @@
 #define READMESH_ELEMENT_H_
 
 #include <algorithm>
-#include <iomanip>
 #include <fstream>
 #include <functional>
+#include <iomanip>
 #include <memory>
 #include <vector>
 
@@ -24,7 +24,8 @@ class Element {
   }
 
   //! Constructor with id and element type
-  Element(const unsigned& id, const unsigned& type, const unsigned& object_id) : id_{id}, type_{type}, object_id_{object_id} {
+  Element(const unsigned& id, const unsigned& type, const unsigned& object_id)
+      : id_{id}, type_{type}, object_id_{object_id} {
     vec_vertex_ptr_.clear();
     vec_tags_.clear();
     centroid_ = {0.};
@@ -33,8 +34,8 @@ class Element {
   //! Return id of the element
   unsigned id() const { return id_; }
 
-  //! Return type of element 
-  unsigned type() const { return type_; } 
+  //! Return type of element
+  unsigned type() const { return type_; }
 
   //! Assign a vertex pointer to an index
   bool vertex_ptr(const unsigned& index, std::shared_ptr<Vertex>& vertex_ptr) {
@@ -46,9 +47,15 @@ class Element {
   }
 
   //! Add a vertex pointer
-  //! \TODO Requires check to see if the vertex exists.
   bool vertex_ptr(std::shared_ptr<Vertex>& vertex_ptr) {
-    vec_vertex_ptr_.push_back(vertex_ptr);
+    // Check if the vertex exists and is not null before adding
+    if ((std::find(std::begin(vec_vertex_ptr_), std::end(vec_vertex_ptr_),
+                   vertex_ptr) == std::end(vec_vertex_ptr_)) &&
+        (vertex_ptr != nullptr)) {
+      vec_vertex_ptr_.push_back(vertex_ptr);
+      return true;
+    } else
+      return false;
   }
 
   //! Return list of vertex pointers associated with the element

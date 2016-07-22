@@ -14,6 +14,5 @@ std::map<unsigned, unsigned> map_element_type_nodes{
     {3, 4},  // 4-node quadrangle.
     {4, 4}   // 4-node tetrahedron
 };
-
 }
 #endif  // READMESH_SETTINGS_H_

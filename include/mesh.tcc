@@ -296,5 +296,3 @@ void Mesh::read_vertices(std::ifstream& file) {
       std::cerr << "Invalid entry for node: " << line << std::endl;
   }
 }
-
-

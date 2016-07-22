@@ -19,5 +19,3 @@ void Element::compute_centroid() {
             << " " << centroid_.at(2) << vec_vertex_ptr_.size() << std::endl;
 #endif
 }
-
-

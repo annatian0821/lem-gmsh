@@ -3,8 +3,8 @@
 
 #include <algorithm>
 #include <fstream>
-#include <iterator>
 #include <iostream>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <sstream>
@@ -43,13 +43,24 @@ class Mesh {
   void read_surfaces(std::ifstream& file);
 
   // Set the element pointer index to element
-  void element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
-    element_list_ptr_.at(index) = elementptr;
+  bool element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
+    if (elementptr) {
+      element_list_ptr_.at(index) = elementptr;
+      return true;
+    } else
+      return false;
   }
 
   // Add an element pointer
-  void element_ptr(std::shared_ptr<Element>& elementptr) {
-    element_list_ptr_.push_back(elementptr);
+  bool element_ptr(std::shared_ptr<Element>& elementptr) {
+    // Check if the vertex exists and is not null before adding
+    if ((std::find(std::begin(element_list_ptr_), std::end(element_list_ptr_),
+                   elementptr) == std::end(element_list_ptr_)) &&
+        (elementptr != nullptr)) {
+      element_list_ptr_.push_back(elementptr);
+      return true;
+    } else
+      return false;
   }
 
   // Return element pointer for a given index
