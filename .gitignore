@@ -32,5 +32,6 @@ readgmsh
 bin/*.msh*
 src/*#
 *.*swp*
-./*.geo*
-./*.msh*
+*.geo*
+*.msh*
+*.txt*

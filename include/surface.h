@@ -1,20 +1,24 @@
 #ifndef READMESH_SURFACE_H_
 #define READMESH_SURFACE_H_
 
+#include <algorithm>
 #include <array>
+#include <limits>
 #include <memory>
 #include <vector>
 
-//#include "element.h"
 #include "vertex.h"
 
 //! Surface class
 //! \brief Surface class for
-
 class Surface {
  public:
   //! Constructor with surface id
-  explicit Surface(const unsigned surface_id) : surface_id_{surface_id} {}
+  explicit Surface(const unsigned surface_id) : surface_id_{surface_id} {
+    vec_vertices_ptr_.clear();
+    std::fill(normal_vector_.begin(), normal_vector_.end(),
+              std::numeric_limits<double>::quiet_NaN());
+  }
 
   //! Return id of the surface
   unsigned surfaceid() const { return surface_id_; }
@@ -39,8 +43,8 @@ class Surface {
   bool frac_surf() { return frac_surface_; }
 
  private:
-  bool frac_surface_;
   unsigned surface_id_;
+  bool frac_surface_;
   std::vector<std::shared_ptr<Vertex>> vec_vertices_ptr_;
   std::array<double, Dim> normal_vector_;
 };
