@@ -112,14 +112,6 @@ class Mesh {
   // Frac pairs
   void frac_pairs(const unsigned element_id, const std::vector<unsigned> vlist);
 
-  // Add frac pair
-  void assign_frac_pair(const std::vector<unsigned> frac_pair) {
-    frac_pair_ = frac_pair;
-  }
-
-  // Return frac pair
-  std::vector<unsigned> return_frac_pair() { return frac_pair_; }
-
   // Find list of element pointers for a given surface id
   std::vector<std::shared_ptr<Element>> find_element_id(
       const unsigned object_id) const {
@@ -140,11 +132,38 @@ class Mesh {
       return false;
   }
 
+  //! Add frac pair to list
+  void add_frac_pair(std::pair<unsigned, unsigned> fpair) {
+    frac_pair_2_.push_back(fpair);
+  }
+
+  //! Return vector of frac pairs 
+  std::vector<std::pair<unsigned, unsigned>> return_frac_pair_2() { 
+    return frac_pair_2_; 
+  } 
+
+  //! Print nodes in txt file 
+  void write_nodes(); 
+
+  //! Print fracture pairs in txt file 
+  void write_fractures(); 
+
+  //! Add centroid to list 
+  void add_centroid(std::array<double, 3> centroid) { 
+    centroid_.push_back(centroid); 
+  } 
+
+  //! Return vector of centroid coordinates 
+  std::vector<std::array<double, 3>> return_vec_centroid () { 
+    return centroid_; 
+  } 
+
  private:
   std::vector<std::shared_ptr<Element>> element_list_ptr_;
   std::vector<std::shared_ptr<Surface>> surface_list_ptr_;
   std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr_;
-  std::vector<unsigned> frac_pair_;
+  std::vector<std::pair<unsigned, unsigned>> frac_pair_2_;
+  std::vector<std::array<double, 3>> centroid_; 
 };
 
 #include "mesh.tcc"

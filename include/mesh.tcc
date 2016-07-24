@@ -75,10 +75,6 @@ void Mesh::read_elements(std::ifstream& file) {
   //! Object id
   unsigned object_id = std::numeric_limits<unsigned>::max();
 
-  // Opening nodes.txt file to print centroid coordinates
-  std::ofstream nodestream;
-  nodestream.open("nodes.txt", std::ofstream::out | std::ostream::trunc);
-
   // Iterate through all vertices in the mesh file
   for (unsigned i = 0; i < nelements; ++i) {
     std::getline(file, line);
@@ -118,15 +114,12 @@ void Mesh::read_elements(std::ifstream& file) {
       if (element_type == 4) {
         element->compute_centroid();
         std::array<double, 3> centroid_ = element->centroid();
-        nodestream << std::left << std::setw(10) << centroid_.at(0) << '\t'
-                   << std::setw(10) << centroid_.at(1) << '\t' << std::setw(10)
-                   << centroid_.at(2) << std::endl;
+        this->add_centroid(centroid_);
       }
       this->element_ptr(element);
     } else
       std::cerr << "Invalid entry for node: " << line << std::endl;
   }
-  nodestream.close();
 }
 
 //! Read ids and types of surfaces
@@ -142,10 +135,6 @@ void Mesh::read_surfaces(std::ifstream& file) {
   unsigned nsurfaces;
   istream >> nsurfaces;
   std::cout << "Number of physical objects = " << nsurfaces << std::endl;
-
-  //! Open up fracture.txt file
-  std::ofstream fracstream;
-  fracstream.open("fracture.txt", std::ofstream::out | std::ostream::trunc);
 
   //! Surface ID
   unsigned surface_id = std::numeric_limits<unsigned>::max();
@@ -199,15 +188,12 @@ void Mesh::read_surfaces(std::ifstream& file) {
 
           // Print fracture pairs
           this->frac_pairs(eid, vertex_id_list);
-          auto fpair = this->return_frac_pair();
-          fracstream << fpair.at(0) << " " << fpair.at(1) << std::endl;
         }
       }
       this->surface_ptr(surface);
     } else
       std::cerr << "Invalid entry for node: " << line << std::endl;
   }
-  fracstream.close();
 }
 
 //! Find fracture pairs
@@ -215,6 +201,8 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned> vfraclist) {
 
   std::vector<unsigned> vlist, frac_pair;
   frac_pair.clear();
+  std::pair<unsigned, unsigned> frac_pair_2;
+  frac_pair_2 = std::make_pair(-1, -1);
   unsigned final_node_id = 0;
 
   auto elem_ptrs = this->element_list_ptr();
@@ -235,12 +223,15 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned> vfraclist) {
       std::set_intersection(vfraclist.begin(), vfraclist.end(), vlist.begin(),
                             vlist.end(), std::back_inserter(vintersect));
       if (vintersect.size() == 3) {
-        frac_pair.push_back(final_node_id);
+        if (frac_pair_2.first == -1)
+          frac_pair_2.first = final_node_id;
+        else
+          frac_pair_2.second = final_node_id;
       }
       ++final_node_id;
     }
   }
-  this->assign_frac_pair(frac_pair);
+  this->add_frac_pair(frac_pair_2);
 }
 
 //! Read ids and coordinates of vertices
@@ -297,4 +288,26 @@ void Mesh::read_vertices(std::ifstream& file) {
   }
 }
 
+//! Print nodes in txt file
+void Mesh::write_nodes() {
+  std::ofstream nodestream;
+  nodestream.open("nodes.txt", std::ofstream::out | std::ostream::trunc);
+  auto vec_centroid_ = this->return_vec_centroid();
+  for (unsigned i = 0; i < vec_centroid_.size(); ++i) {
+    nodestream << std::left << std::setw(10) << vec_centroid_.at(i).at(0)
+               << '\t' << std::setw(10) << centroid_.at(i).at(1) << '\t'
+               << std::setw(10) << centroid_.at(i).at(2) << std::endl;
+  }
+  nodestream.close();
+}
 
+//! Print fracture pairs in txt file
+void Mesh::write_fractures() {
+  std::ofstream fracstream;
+  fracstream.open("fracture.txt", std::ofstream::out | std::ostream::trunc);
+  auto fpair = this->return_frac_pair_2();
+  for (unsigned i = 0; i < fpair.size(); ++i) {
+    fracstream << fpair.at(i).first << " " << fpair.at(i).second << std::endl;
+  }
+  fracstream.close();
+}
