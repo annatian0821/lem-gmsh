@@ -177,16 +177,9 @@ void Mesh::read_surfaces(std::ifstream& file) {
         auto vec_elemtptr = this->find_element_id(surface_id);
         // Get list of vertex pointers for every element
         for (const auto& elemptr : vec_elemtptr) {
-          auto vec_vertptr = elemptr->vec_vertex_ptr();
           auto eid = elemptr->id();
-          // Get list of vertex ids (int) for every element
-          vertex_id_list.clear();
-          for (const auto& vtr : vec_vertptr) {
-            auto vid = vtr->id();
-            vertex_id_list.push_back(vid);
-          }
-
-          // Print fracture pairs
+          auto vertex_id_list = elemptr->vec_vertex_ids(); 
+          // Find fracture pairs
           this->frac_pairs(eid, vertex_id_list);
         }
       }
@@ -199,8 +192,6 @@ void Mesh::read_surfaces(std::ifstream& file) {
 //! Find fracture pairs
 void Mesh::frac_pairs(unsigned eid, std::vector<unsigned> vfraclist) {
 
-  std::vector<unsigned> vlist, frac_pair;
-  frac_pair.clear();
   std::pair<unsigned, unsigned> frac_pair_2;
   frac_pair_2 = std::make_pair(-1, -1);
   unsigned final_node_id = 0;
@@ -210,12 +201,7 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned> vfraclist) {
     auto element_type = eptr->type();
 
     if (element_id != eid && element_type == 4) {
-      vlist.clear();
-      auto vert_ptr = eptr->vec_vertex_ptr();
-      for (const auto& vtr : vert_ptr) {
-        auto vid = vtr->id();
-        vlist.push_back(vid);
-      }
+      auto vlist = eptr->vec_vertex_ids(); 
       std::sort(vfraclist.begin(), vfraclist.end());
       std::sort(vlist.begin(), vlist.end());
       std::vector<unsigned> vintersect;

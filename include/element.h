@@ -58,16 +58,19 @@ class Element {
       return false;
   }
 
-  //! Return list of vertex pointers associated with the element
-  std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr() {
-    return vec_vertex_ptr_;
+  //! Return vector of  vertex ids forming the element 
+  std::vector<unsigned> vec_vertex_ids() {
+    std::vector<unsigned> vec_vertex_ids_; 
+    vec_vertex_ids_.clear();
+    for (const auto& vtr : vec_vertex_ptr_) {
+      auto vid = vtr->id();
+      vec_vertex_ids_.push_back(vid);
+    }
+    return vec_vertex_ids_; 
   }
 
   // Add a vertex id
   void add_vid(const unsigned id) { vec_vertices_.push_back(id); }
-
-  // Returt list of vertex ids
-  std::vector<unsigned> vert_list() { return vec_vertices_; }
 
   //! Compute centroid of the element
   void compute_centroid();
