@@ -19,7 +19,8 @@ env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
-   - secure: "YrLOqz0SG0C3KzfIpZTUgA"
+   - secure: "vAsvNe+g89Djw1x4xd4V1xUV4xV7jYzxbA74U3sTf5GKaSVALUzLPvMCIgzGceek59c7ba3D8TK54qAFw2yjfcmWQMrPex/dJmYzh9XZqmh01+yAGJmNar/omC7nb3FeA621WGfDhIN23Ts/VdDTjthZbnIgpnIZsucfhPQ8iG7fHfaXnq2id4oCitsaEpjXhe6UWFrx+mLjJvjkhk3c7ASCg12ybSE0uDDMYHODzPe3iMP76uIRdJxXnHFdofS9xrW1YRUoMDzJOz5XlbUJLjA13hSzSX5NJcT5WorKltHBUMfBo7OWKsjCdt9o6xoXWbhEa3+18K1ncyKiiQ0fGSf0vsCUq/FEZUhxGOM9sbY/qywxB2hkk3MYmd4YQn6ZcsQ08NBYdR0z/QY51j1u6maz6tX88a50Ugq7q8Hu3g6pYlygySWh1VTQNdLI0bm7Tjqo9YEWwpkaolGWYR9ctp+xHV+bGqlh7MXNHeeor8PO7waW6ey2VJCYg2fcmU+ucYYwTUi8A/0W3jYuXJ3HztdO43uk9BDC6JIZ4NshRIfgXYLXB0MmJfq/epIda/TP/m2QeGoFGAFYFmaFsQ24ulqXUrzfsmqwgBjE/3v2ZGsjeMQX8iPV/K4o1LDpKCSbM+R2au0cXNn6ZYldHah2HpZubn0QsA8kg+AW6ieqWME="
+
 
 ##################
 # Before install #
@@ -140,13 +141,6 @@ matrix:
       after_success:
         # - valgrind --error-exitcode=1 --leak-check=full ./lem-gmsh
         - cd .. && cppcheck --enable=warning --inconclusive --force --std=c++11 src/*.cc include/*.h include/*.tcc --error-exitcode=1
-
-    # OSX / Clang
-    - os: osx
-      osx_image: xcode7.3
-
-    - os: osx
-      osx_image: xcode8
 
 ################
 # build script #
