@@ -20,10 +20,10 @@ int main(int argc, char** argv) {
   // Creat mesh object
   std::unique_ptr<Mesh> mesh(new Mesh);
 
-  // Read msh file 
+  // Read msh file
   mesh->read_msh_file(filename);
 
   // Print out fracture pairs and nodes coordinates
-  mesh->write_fractures(); 
-  mesh->write_nodes(); 
+  mesh->write_fractures();
+  mesh->write_nodes();
 }

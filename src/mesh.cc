@@ -178,7 +178,7 @@ void Mesh::read_surfaces(std::ifstream& file) {
         // Get list of vertex pointers for every element
         for (const auto& elemptr : vec_elemtptr) {
           auto eid = elemptr->id();
-          auto vertex_id_list = elemptr->vec_vertex_ids(); 
+          auto vertex_id_list = elemptr->vec_vertex_ids();
           // Find fracture pairs
           this->frac_pairs(eid, vertex_id_list);
         }
@@ -201,7 +201,7 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned> vfraclist) {
     auto element_type = eptr->type();
 
     if (element_id != eid && element_type == 4) {
-      auto vlist = eptr->vec_vertex_ids(); 
+      auto vlist = eptr->vec_vertex_ids();
       std::sort(vfraclist.begin(), vfraclist.end());
       std::sort(vlist.begin(), vlist.end());
       std::vector<unsigned> vintersect;
