@@ -58,15 +58,15 @@ class Element {
       return false;
   }
 
-  //! Return vector of  vertex ids forming the element 
+  //! Return vector of  vertex ids forming the element
   std::vector<unsigned> vec_vertex_ids() {
-    std::vector<unsigned> vec_vertex_ids_; 
+    std::vector<unsigned> vec_vertex_ids_;
     vec_vertex_ids_.clear();
     for (const auto& vtr : vec_vertex_ptr_) {
       auto vid = vtr->id();
       vec_vertex_ids_.push_back(vid);
     }
-    return vec_vertex_ids_; 
+    return vec_vertex_ids_;
   }
 
   // Add a vertex id
