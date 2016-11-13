@@ -17,7 +17,7 @@ void Mesh::read_msh_file(const std::string& filename) {
 }
 
 //! Read keywords
-void Mesh::read_keyword(std::ifstream& file, std::string keyword) {
+void Mesh::read_keyword(std::ifstream& file, const std::string& keyword) {
 
   std::string line;
   file.clear();
@@ -25,15 +25,13 @@ void Mesh::read_keyword(std::ifstream& file, std::string keyword) {
   while (std::getline(file, line)) {
     if (line != keyword) {
       if (line.find(keyword) != std::string::npos) {
-#ifdef DEBUG
-        std::cout << "Cannot find keyword: " << keyword << std::endl;
-        std::cout << "Line read -" << line << '-' << std::endl;
-#endif
+        std::cerr << "Cannot find keyword: " << keyword << '\n';
+        std::cerr << "Line read -" << line << '-' << '\n';
         break;
       };
     } else {
 #ifdef DEBUG
-      std::cout << "Read keyword -" << keyword << "- successfully" << std::endl;
+      std::cout << "Read keyword -" << keyword << "- successfully\n";
 #endif
       break;
     }
@@ -59,7 +57,7 @@ void Mesh::read_elements(std::ifstream& file) {
   // Total number of elements
   unsigned nelements;
   istream >> nelements;
-  std::cout << "Total number of elements = " << nelements << std::endl;
+  std::cout << "Total number of elements = " << nelements << '\n';
 
   //! Element ID
   unsigned element_id = std::numeric_limits<unsigned>::max();
@@ -71,7 +69,7 @@ void Mesh::read_elements(std::ifstream& file) {
   unsigned ntags = std::numeric_limits<unsigned>::max();
   unsigned tag = std::numeric_limits<unsigned>::max();
   //! Node id
-  unsigned nid = std::numeric_limits<unsigned>::max();
+  unsigned node_id = std::numeric_limits<unsigned>::max();
   //! Object id
   unsigned object_id = std::numeric_limits<unsigned>::max();
 
@@ -103,9 +101,9 @@ void Mesh::read_elements(std::ifstream& file) {
 
       if (nnodes != std::numeric_limits<unsigned>::max()) {
         for (unsigned nodes = 0; nodes < nnodes; ++nodes) {
-          istream >> nid;
-          element->add_vid(nid);
-          std::shared_ptr<Vertex> vptr = this->vertex_ptr_at_id(nid);
+          istream >> node_id;
+          element->add_vid(node_id);
+          std::shared_ptr<Vertex> vptr = this->vertex_ptr_at_id(node_id);
           if (vptr) element->vertex_ptr(vptr);
         }
       }
@@ -118,7 +116,7 @@ void Mesh::read_elements(std::ifstream& file) {
       }
       this->element_ptr(element);
     } else
-      std::cerr << "Invalid entry for node: " << line << std::endl;
+      std::cerr << "Invalid entry for node: " << line << '\n';
   }
 }
 
@@ -134,7 +132,7 @@ void Mesh::read_surfaces(std::ifstream& file) {
   // Total number of surfaces
   unsigned nsurfaces;
   istream >> nsurfaces;
-  std::cout << "Number of physical objects = " << nsurfaces << std::endl;
+  std::cout << "Number of physical objects = " << nsurfaces << '\n';
 
   //! Surface ID
   unsigned surface_id = std::numeric_limits<unsigned>::max();
@@ -169,54 +167,52 @@ void Mesh::read_surfaces(std::ifstream& file) {
       auto surface = std::make_shared<Surface>(surface_id);
 
       // Find if its fracture surface or not
-      auto find = this->find_fracture_surface(object_name);
-
       // Get fracture pairs using pointers
-      if (find == true) {
+      if (this->find_fracture_surface(object_name)) {
         // Get list of element pointers for surface_id
-        auto vec_elemtptr = this->find_element_id(surface_id);
+        auto elements = this->find_element_id(surface_id);
         // Get list of vertex pointers for every element
-        for (const auto& elemptr : vec_elemtptr) {
-          auto eid = elemptr->id();
-          auto vertex_id_list = elemptr->vec_vertex_ids();
+        for (const auto& element : elements) {
+          const auto element_id = element->id();
+          const auto vertex_id_list = element->vec_vertex_ids();
           // Find fracture pairs
-          this->frac_pairs(eid, vertex_id_list);
+          this->frac_pairs(element_id, vertex_id_list);
         }
       }
       this->surface_ptr(surface);
     } else
-      std::cerr << "Invalid entry for node: " << line << std::endl;
+      std::cerr << "Invalid entry for node: " << line << '\n';
   }
 }
 
 //! Find fracture pairs
 void Mesh::frac_pairs(unsigned eid, std::vector<unsigned> vfraclist) {
 
-  std::pair<unsigned, unsigned> frac_pair_2;
-  frac_pair_2 = std::make_pair(-1, -1);
+  std::pair<unsigned, unsigned> fracture_pairs_;
+  fracture_pairs_ = std::make_pair(-1, -1);
   unsigned final_node_id = 0;
 
-  for (const auto& eptr : vec_element_ptr_) {
-    auto element_id = eptr->id();
-    auto element_type = eptr->type();
+  for (const auto& element : elements_) {
+    const auto element_id = element->id();
+    const auto element_type = element->type();
 
     if (element_id != eid && element_type == 4) {
-      auto vlist = eptr->vec_vertex_ids();
+      auto vlist = element->vec_vertex_ids();
       std::sort(vfraclist.begin(), vfraclist.end());
       std::sort(vlist.begin(), vlist.end());
       std::vector<unsigned> vintersect;
       std::set_intersection(vfraclist.begin(), vfraclist.end(), vlist.begin(),
                             vlist.end(), std::back_inserter(vintersect));
       if (vintersect.size() == 3) {
-        if (frac_pair_2.first == -1)
-          frac_pair_2.first = final_node_id;
+        if (fracture_pairs_.first == -1)
+          fracture_pairs_.first = final_node_id;
         else
-          frac_pair_2.second = final_node_id;
+          fracture_pairs_.second = final_node_id;
       }
       ++final_node_id;
     }
   }
-  this->add_frac_pair(frac_pair_2);
+  this->add_frac_pair(fracture_pairs_);
 }
 
 //! Read ids and coordinates of vertices
@@ -237,11 +233,11 @@ void Mesh::read_vertices(std::ifstream& file) {
   // Total number of vertices
   unsigned nvertices;
   istream >> nvertices;
-  std::cout << "Total number of vertices = " << nvertices << std::endl;
+  std::cout << "Total number of vertices = " << nvertices << '\n';
 
   // Vertex id and coordinates
   unsigned vid = std::numeric_limits<unsigned>::max();
-  std::array<double, mesh::DIM> vcoordinates;
+  std::array<double, mesh::dim> vcoordinates;
 
   // Iterate through all vertices in the mesh file
   for (unsigned i = 0; i < nvertices;) {
@@ -254,9 +250,7 @@ void Mesh::read_vertices(std::ifstream& file) {
 
       // Read ids and coordinates
       istream >> vid;
-      for (unsigned j = 0; j < vcoordinates.size(); ++j) {
-        istream >> vcoordinates.at(j);
-      }
+      for (auto& vcoordinate : vcoordinates) istream >> vcoordinate;
 
       // Create a new vertex and add to list
       auto vertex = std::make_shared<Vertex>(vid, vcoordinates);
@@ -264,24 +258,20 @@ void Mesh::read_vertices(std::ifstream& file) {
 
       // Increament number of vertex on successful read
       ++i;
-
-#ifdef DEBUG
-      std::cout << vertex->id() << std::endl;
-#endif
     } else
-      std::cerr << "Invalid entry for node: " << line << std::endl;
+      std::cerr << "Invalid entry for node: " << line << '\n';
   }
 }
 
 //! Print nodes in txt file
 void Mesh::write_nodes() {
   std::ofstream nodestream;
-  nodestream.open("nodes.txt", std::ofstream::out | std::ostream::trunc);
-  auto vec_centroid_ = this->return_vec_centroid();
-  for (unsigned i = 0; i < vec_centroid_.size(); ++i) {
-    nodestream << std::left << std::setw(10) << vec_centroid_.at(i).at(0)
-               << '\t' << std::setw(10) << centroid_.at(i).at(1) << '\t'
-               << std::setw(10) << centroid_.at(i).at(2) << std::endl;
+  nodestream.open("nodes.txt", std::ofstream::out);
+  auto centroids = this->return_vec_centroid();
+  for (const auto& centroid : centroids) {
+    nodestream << std::left << std::setw(10) << centroid.at(0) << '\t'
+               << std::setw(10) << centroid.at(1) << '\t' << std::setw(10)
+               << centroid.at(2) << '\n';
   }
   nodestream.close();
 }
@@ -290,9 +280,8 @@ void Mesh::write_nodes() {
 void Mesh::write_fractures() {
   std::ofstream fracstream;
   fracstream.open("fracture.txt", std::ofstream::out | std::ostream::trunc);
-  auto fpair = this->return_frac_pair_2();
-  for (unsigned i = 0; i < fpair.size(); ++i) {
-    fracstream << fpair.at(i).first << " " << fpair.at(i).second << std::endl;
-  }
+  for (const auto& fracture_pair : fracture_pairs_)
+    fracstream << fracture_pair.first << " " << fracture_pair.second << '\n';
+
   fracstream.close();
 }

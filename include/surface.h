@@ -1,5 +1,5 @@
-#ifndef READMESH_SURFACE_H_
-#define READMESH_SURFACE_H_
+#ifndef READ_GMSH_SURFACE_H_
+#define READ_GMSH_SURFACE_H_
 
 #include <algorithm>
 #include <array>
@@ -49,4 +49,4 @@ class Surface {
   std::array<double, Dim> normal_vector_;
 };
 
-#endif  // READMESH_SURFACE_H_
+#endif  // READ_GMSH_SURFACE_H_

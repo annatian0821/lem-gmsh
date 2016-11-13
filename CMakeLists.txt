@@ -38,7 +38,6 @@ include_directories(
 SET(lem_src
     src/element.cc
     src/mesh.cc
-    src/settings.cc
     src/main.cc
 )
 add_executable(lem-gmsh

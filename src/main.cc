@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
   std::string filename = argv[1];
 
   // Creat mesh object
-  std::unique_ptr<Mesh> mesh(new Mesh);
+  std::unique_ptr<Mesh> mesh(new Mesh(1));
 
   // Read msh file
   mesh->read_msh_file(filename);

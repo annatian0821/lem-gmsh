@@ -1,5 +1,5 @@
-#ifndef READMESH_MESH_H_
-#define READMESH_MESH_H_
+#ifndef READ_GMSH_MESH_H_
+#define READ_GMSH_MESH_H_
 
 #include <algorithm>
 #include <fstream>
@@ -17,21 +17,16 @@
 
 //! Mesh class
 //! \brief Mesh class for creating all elements
-
 class Mesh {
  public:
   //! Default constructor
-  Mesh() {
-    vec_element_ptr_.clear();
-    vec_surface_ptr_.clear();
-    vec_vertex_ptr_.clear();
-  }
+  explicit Mesh(unsigned id) : id_{id} {}
 
-  // Read mesh file exists
+  // Read mesh file
   void read_msh_file(const std::string& filename);
 
   // Read keywords from msh file
-  void read_keyword(std::ifstream& file, std::string keyword);
+  void read_keyword(std::ifstream& file, const std::string& keyword);
 
   // Read elements from msh file
   void read_elements(std::ifstream& file);
@@ -44,13 +39,13 @@ class Mesh {
 
   // Add a vertex pointer
   void vertex_ptr(std::shared_ptr<Vertex>& vertexptr) {
-    vec_vertex_ptr_.push_back(vertexptr);
+    vertices_.push_back(vertexptr);
   }
 
   //! Assign the element pointer index to element
   bool element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
     if (elementptr) {
-      vec_element_ptr_.at(index) = elementptr;
+      elements_.at(index) = elementptr;
       return true;
     } else
       return false;
@@ -58,35 +53,35 @@ class Mesh {
 
   //! Assign a surface pointer at a given index
   void surface_ptr(const unsigned& index,
-                   std::shared_ptr<Surface>& surfaceptr) {
-    vec_surface_ptr_.at(index) = surfaceptr;
+                   const std::shared_ptr<Surface>& surfaceptr) {
+    surfaces_.at(index) = surfaceptr;
   }
 
   //! Append a surface pointer
-  void surface_ptr(std::shared_ptr<Surface>& surfaceptr) {
-    vec_surface_ptr_.push_back(surfaceptr);
+  void surface_ptr(const std::shared_ptr<Surface>& surfaceptr) {
+    surfaces_.push_back(surfaceptr);
   }
 
   //! Add an element pointer
-  bool element_ptr(std::shared_ptr<Element>& elementptr) {
+  bool element_ptr(const std::shared_ptr<Element>& elementptr) {
     // Check if the vertex exists and is not null before adding
-    if ((std::find(std::begin(vec_element_ptr_), std::end(vec_element_ptr_),
-                   elementptr) == std::end(vec_element_ptr_)) &&
+    if ((std::find(std::begin(elements_), std::end(elements_),
+                   elementptr) == std::end(elements_)) &&
         (elementptr != nullptr)) {
-      vec_element_ptr_.push_back(elementptr);
+      elements_.push_back(elementptr);
       return true;
     } else
       return false;
   }
 
   // Frac pairs
-  void frac_pairs(const unsigned element_id, const std::vector<unsigned> vlist);
+  void frac_pairs(unsigned element_id, std::vector<unsigned> vlist);
 
   // Find list of element pointers for a given surface id
   std::vector<std::shared_ptr<Element>> find_element_id(
       const unsigned object_id) const {
     std::vector<std::shared_ptr<Element>> vec_elem_ptr;
-    for (auto element_ptr : vec_element_ptr_) {
+    for (auto element_ptr : elements_) {
       if (element_ptr->objectid() == object_id) {
         vec_elem_ptr.push_back(element_ptr);
       }
@@ -95,7 +90,7 @@ class Mesh {
   }
 
   //! Identify fracture surface
-  bool find_fracture_surface(const std::string object_name) {
+  bool find_fracture_surface(const std::string& object_name) {
     if (object_name.find("Fracture") == true)
       return true;
     else
@@ -103,13 +98,13 @@ class Mesh {
   }
 
   //! Add frac pair to list
-  void add_frac_pair(std::pair<unsigned, unsigned> fpair) {
-    frac_pair_2_.push_back(fpair);
+  void add_frac_pair(const std::pair<unsigned, unsigned>& fpair) {
+    fracture_pairs_.push_back(fpair);
   }
 
   //! Return vector of frac pairs
-  std::vector<std::pair<unsigned, unsigned>> return_frac_pair_2() {
-    return frac_pair_2_;
+  std::vector<std::pair<unsigned, unsigned>> return_fracture_pairs() const {
+    return fracture_pairs_;
   }
 
   //! Print nodes in txt file
@@ -119,45 +114,55 @@ class Mesh {
   void write_fractures();
 
   //! Add centroid to list
-  void add_centroid(std::array<double, 3> centroid) {
+  void add_centroid(const std::array<double, 3>& centroid) {
     centroid_.push_back(centroid);
   }
 
   //! Return vector of centroid coordinates
-  std::vector<std::array<double, 3>> return_vec_centroid() { return centroid_; }
+  std::vector<std::array<double, 3>> return_vec_centroid() const {
+    return centroid_;
+  }
 
  private:
   // Return the vertex pointer for a given index
-  std::shared_ptr<Vertex> vertex_ptr(const unsigned index) const {
-    return vec_vertex_ptr_.at(index);
+  std::shared_ptr<Vertex> vertex_ptr(unsigned index) const {
+    return vertices_.at(index);
   }
 
   // Return the vertex pointer for a given vertex id
-  std::shared_ptr<Vertex> vertex_ptr_at_id(const unsigned id) const {
+  std::shared_ptr<Vertex> vertex_ptr_at_id(unsigned id) const {
     std::shared_ptr<Vertex> ver_ptr = nullptr;
-    for (auto vertex_ptr : vec_vertex_ptr_) {
+    for (auto vertex_ptr : vertices_) {
       if (vertex_ptr->id() == id) ver_ptr = vertex_ptr;
     }
     return ver_ptr;
   }
 
   // Return the surface pointer for a given index
-  std::shared_ptr<Surface> surface_ptr(const unsigned index) const {
-    return vec_surface_ptr_.at(index);
+  std::shared_ptr<Surface> surface_ptr(unsigned index) const {
+    return surfaces_.at(index);
   }
 
   // Return the element pointer for a given index
-  std::shared_ptr<Element> element_ptr(const unsigned index) const {
-    return vec_element_ptr_.at(index);
+  std::shared_ptr<Element> element_ptr(unsigned index) const {
+    return elements_.at(index);
   }
+  //! Index
+  unsigned id_{std::numeric_limits<unsigned>::max()};
 
   //! Vector of element pointers
-  std::vector<std::shared_ptr<Element>> vec_element_ptr_;
+  std::vector<std::shared_ptr<Element>> elements_;
+
   //! Vector of surface pointers
-  std::vector<std::shared_ptr<Surface>> vec_surface_ptr_;
+  std::vector<std::shared_ptr<Surface>> surfaces_;
+
   //! Vector of vertex pointers
-  std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr_;
-  std::vector<std::pair<unsigned, unsigned>> frac_pair_2_;
+  std::vector<std::shared_ptr<Vertex>> vertices_;
+
+  //! List of fracture pairs
+  std::vector<std::pair<unsigned, unsigned>> fracture_pairs_;
+
+  //! Centroid
   std::vector<std::array<double, 3>> centroid_;
 };
-#endif  // READMESH_MESH_H_
+#endif  // READ_GMSH_MESH_H_

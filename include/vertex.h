@@ -1,5 +1,5 @@
-#ifndef READMESH_VERTEX_H_
-#define READMESH_VERTEX_H_
+#ifndef READ_GMSH_VERTEX_H_
+#define READ_GMSH_VERTEX_H_
 
 #include <array>
 
@@ -37,4 +37,4 @@ class Vertex {
   std::array<double, Dim> coord_;
 };
 
-#endif  // READMESH_VERTEX_H_
+#endif  // READ_GMSH_VERTEX_H_

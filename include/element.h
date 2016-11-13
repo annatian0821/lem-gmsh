@@ -1,5 +1,5 @@
-#ifndef READMESH_ELEMENT_H_
-#define READMESH_ELEMENT_H_
+#ifndef READ_GMSH_ELEMENT_H_
+#define READ_GMSH_ELEMENT_H_
 
 #include <algorithm>
 #include <fstream>
@@ -19,14 +19,14 @@ class Element {
   //! Constructor with element id
   explicit Element(const unsigned id) : id_{id} {
     surface_list_ptr_.clear();
-    vec_vertex_ptr_.clear();
+    vertices_.clear();
     centroid_ = {0.};
   }
 
   //! Constructor with id and element type
   Element(const unsigned& id, const unsigned& type, const unsigned& object_id)
       : id_{id}, type_{type}, object_id_{object_id} {
-    vec_vertex_ptr_.clear();
+    vertices_.clear();
     vec_tags_.clear();
     centroid_ = {0.};
   }
@@ -40,7 +40,7 @@ class Element {
   //! Assign a vertex pointer to an index
   bool vertex_ptr(const unsigned& index, std::shared_ptr<Vertex>& vertex_ptr) {
     if (vertex_ptr) {
-      vec_vertex_ptr_.at(index) = vertex_ptr;
+      vertices_.at(index) = vertex_ptr;
       return true;
     } else
       return false;
@@ -49,10 +49,10 @@ class Element {
   //! Add a vertex pointer
   bool vertex_ptr(std::shared_ptr<Vertex>& vertex_ptr) {
     // Check if the vertex exists and is not null before adding
-    if ((std::find(std::begin(vec_vertex_ptr_), std::end(vec_vertex_ptr_),
-                   vertex_ptr) == std::end(vec_vertex_ptr_)) &&
+    if ((std::find(std::begin(vertices_), std::end(vertices_),
+                   vertex_ptr) == std::end(vertices_)) &&
         (vertex_ptr != nullptr)) {
-      vec_vertex_ptr_.push_back(vertex_ptr);
+      vertices_.push_back(vertex_ptr);
       return true;
     } else
       return false;
@@ -62,7 +62,7 @@ class Element {
   std::vector<unsigned> vec_vertex_ids() {
     std::vector<unsigned> vec_vertex_ids_;
     vec_vertex_ids_.clear();
-    for (const auto& vtr : vec_vertex_ptr_) {
+    for (const auto& vtr : vertices_) {
       auto vid = vtr->id();
       vec_vertex_ids_.push_back(vid);
     }
@@ -76,7 +76,7 @@ class Element {
   void compute_centroid();
 
   //! Retrun centroid of the element
-  std::array<double, mesh::DIM> centroid() const { return centroid_; }
+  std::array<double, mesh::dim> centroid() const { return centroid_; }
 
   //! Append tag to element
   void tag(const unsigned& tag) { vec_tags_.push_back(tag); }
@@ -93,9 +93,9 @@ class Element {
   //! Element type
   unsigned type_;
   //! Centroid of the element
-  std::array<double, mesh::DIM> centroid_;
+  std::array<double, mesh::dim> centroid_;
   //! Vector of vertex pointers
-  std::vector<std::shared_ptr<Vertex>> vec_vertex_ptr_;
+  std::vector<std::shared_ptr<Vertex>> vertices_;
   //! Vector of surface pointers
   std::vector<std::shared_ptr<Surface>> surface_list_ptr_;
   //! Element tags
@@ -105,4 +105,4 @@ class Element {
   //! List of vertices
   std::vector<unsigned> vec_vertices_;
 };
-#endif  // READMESH_ELEMENT_H_
+#endif  // READ_GMSH_ELEMENT_H_
