@@ -19,6 +19,9 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -fpic")
 endif()
 
+# CMake Modules
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
 # OpenMP
 find_package(OpenMP)
 if (OPENMP_FOUND)
@@ -43,3 +46,7 @@ SET(lem_src
 add_executable(lem-gmsh
                ${lem_src}
 )
+
+# Coverage
+find_package(codecov)
+add_coverage(lem-gmsh)

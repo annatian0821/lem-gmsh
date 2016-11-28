@@ -25,7 +25,7 @@ class Vertex {
   std::array<double, Dim> coord() const { return coord_; }
 
   //! Return coordinates of the vertex with vertex id
-  std::array<double, Dim> coord(const unsigned& id) { return coord_; }
+  std::array<double, Dim> coord(unsigned id) { return coord_; }
 
   //! Return id of the vertex
   unsigned id() const { return id_; }

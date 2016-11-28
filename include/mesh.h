@@ -43,13 +43,7 @@ class Mesh {
   }
 
   //! Assign the element pointer index to element
-  bool element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr) {
-    if (elementptr) {
-      elements_.at(index) = elementptr;
-      return true;
-    } else
-      return false;
-  }
+  bool element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr);
 
   //! Assign a surface pointer at a given index
   void surface_ptr(const unsigned& index,
@@ -79,10 +73,10 @@ class Mesh {
 
   // Find list of element pointers for a given surface id
   std::vector<std::shared_ptr<Element>> find_element_id(
-      const unsigned object_id) const {
+      unsigned surface_id) const {
     std::vector<std::shared_ptr<Element>> vec_elem_ptr;
     for (auto element_ptr : elements_) {
-      if (element_ptr->objectid() == object_id) {
+      if (element_ptr->objectid() == surface_id) {
         vec_elem_ptr.push_back(element_ptr);
       }
     }

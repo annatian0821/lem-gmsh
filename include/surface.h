@@ -10,7 +10,7 @@
 #include "vertex.h"
 
 //! Surface class
-//! \brief Surface class for
+//! \brief Describes any surface with id, vertices and fracture surface
 class Surface {
  public:
   //! Constructor with surface id
@@ -40,12 +40,16 @@ class Surface {
   }
 
   //! Return surface type (frac or not)
-  bool frac_surf() { return frac_surface_; }
+  bool frac_surf() const { return frac_surface_; }
 
  private:
-  unsigned surface_id_;
-  bool frac_surface_;
+  //! Surface id
+  unsigned surface_id_{std::numeric_limits<unsigned>::max()};
+  //! Fracture surface
+  bool frac_surface_{false};
+  //! Vect of vertices on the surface
   std::vector<std::shared_ptr<Vertex>> vec_vertices_ptr_;
+  //! Normal vector to the surface
   std::array<double, Dim> normal_vector_;
 };
 

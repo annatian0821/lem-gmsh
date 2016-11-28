@@ -123,7 +123,7 @@ matrix:
       after_success:
         - rm -rf ./* && cmake -DENABLE_COVERAGE=On ..
         - make clean && make
-        # - ./lem-gmsh
+        - # ./lem-gmsh
         - make gcov
         - make lcov
         - bash <(curl -s https://codecov.io/bash) -X gcov

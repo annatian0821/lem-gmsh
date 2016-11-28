@@ -1,4 +1,4 @@
-# Lattice Element Method - Mesh Generator (lem-gmsh)
+# Lattice Element Method - GMSH (lem-gmsh)
 > Cambridge Berkeley - Geomechanics
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/cb-geo/develop/license.md)

@@ -1,6 +1,18 @@
 #include "mesh.h"
 
+//! Assign element pointer to a given index
+//! \param[in] index Index of the element
+//! \param[in] element Element pointer
+bool Mesh::element_ptr(unsigned index, std::shared_ptr<Element>& elementptr) {
+  if (elementptr) {
+    elements_.at(index) = elementptr;
+    return true;
+  } else
+    return false;
+}
+
 //! Check if msh file exists
+//! \param[in] filename Mesh file name
 void Mesh::read_msh_file(const std::string& filename) {
 
   std::ifstream file;
