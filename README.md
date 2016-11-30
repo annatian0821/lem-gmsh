@@ -21,4 +21,4 @@
 
 1. Run `make clean && make -jN` (where N is the number of cores)
 
-2. Run lem-gmsh `./lem-gmsh -d /path/to/inputfile/`
+2. Run lem-gmsh `./lem-gmsh /path/to/meshfile.msh`
