@@ -11,10 +11,10 @@ const unsigned Dim = 3;
 class Vertex {
  public:
   //! Constructor with id
-  explicit Vertex(const unsigned id) : id_{id} {}
+  explicit Vertex(unsigned id) : id_{id} {}
 
   //! Constructor with coordinates and id
-  Vertex(const unsigned& id, const std::array<double, Dim>& coord) : id_{id} {
+  Vertex(unsigned id, const std::array<double, Dim>& coord) : id_{id} {
     coord_ = coord;
   }
 

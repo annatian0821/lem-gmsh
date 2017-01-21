@@ -186,7 +186,7 @@ void Mesh::read_surfaces(std::ifstream& file) {
         // Get list of vertex pointers for every element
         for (const auto& element : elements) {
           const auto element_id = element->id();
-          const auto vertex_id_list = element->vec_vertex_ids();
+          auto vertex_id_list = element->vec_vertex_ids();
           // Find fracture pairs
           this->frac_pairs(element_id, vertex_id_list);
         }
@@ -198,7 +198,7 @@ void Mesh::read_surfaces(std::ifstream& file) {
 }
 
 //! Find fracture pairs
-void Mesh::frac_pairs(unsigned eid, std::vector<unsigned> vfraclist) {
+void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist) {
 
   std::pair<unsigned, unsigned> fracture_pairs_;
   fracture_pairs_ = std::make_pair(-1, -1);

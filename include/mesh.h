@@ -43,10 +43,10 @@ class Mesh {
   }
 
   //! Assign the element pointer index to element
-  bool element_ptr(const unsigned index, std::shared_ptr<Element>& elementptr);
+  bool element_ptr(unsigned index, std::shared_ptr<Element>& elementptr);
 
   //! Assign a surface pointer at a given index
-  void surface_ptr(const unsigned& index,
+  void surface_ptr(unsigned index,
                    const std::shared_ptr<Surface>& surfaceptr) {
     surfaces_.at(index) = surfaceptr;
   }
@@ -69,7 +69,7 @@ class Mesh {
   }
 
   // Frac pairs
-  void frac_pairs(unsigned element_id, std::vector<unsigned> vlist);
+  void frac_pairs(unsigned element_id, std::vector<unsigned>& vlist);
 
   // Find list of element pointers for a given surface id
   std::vector<std::shared_ptr<Element>> find_element_id(

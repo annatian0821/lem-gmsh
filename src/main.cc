@@ -10,8 +10,8 @@
 
 int main(int argc, char** argv) {
   if (argc != 2) {
-    std::cout << "Usage: ./lem-gmsh /path/to/mesh_file.msh" << std::endl;
-    std::cerr << "Incorrect number of arguments" << std::endl;
+    std::cout << "Usage: ./lem-gmsh /path/to/mesh_file.msh\n";
+    std::cerr << "Incorrect number of arguments\n";
     std::exit(EXIT_FAILURE);
   }
 

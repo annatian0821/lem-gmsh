@@ -17,14 +17,14 @@
 class Element {
  public:
   //! Constructor with element id
-  explicit Element(const unsigned id) : id_{id} {
+  explicit Element(unsigned id) : id_{id} {
     surface_list_ptr_.clear();
     vertices_.clear();
     centroid_ = {0.};
   }
 
   //! Constructor with id and element type
-  Element(const unsigned& id, const unsigned& type, const unsigned& object_id)
+  Element(unsigned id, unsigned type, unsigned object_id)
       : id_{id}, type_{type}, object_id_{object_id} {
     vertices_.clear();
     vec_tags_.clear();
@@ -38,7 +38,7 @@ class Element {
   unsigned type() const { return type_; }
 
   //! Assign a vertex pointer to an index
-  bool vertex_ptr(const unsigned& index, std::shared_ptr<Vertex>& vertex_ptr) {
+  bool vertex_ptr(unsigned index, std::shared_ptr<Vertex>& vertex_ptr) {
     if (vertex_ptr) {
       vertices_.at(index) = vertex_ptr;
       return true;
@@ -70,7 +70,7 @@ class Element {
   }
 
   // Add a vertex id
-  void add_vid(const unsigned id) { vec_vertices_.push_back(id); }
+  void add_vid(unsigned id) { vec_vertices_.push_back(id); }
 
   //! Compute centroid of the element
   void compute_centroid();
@@ -79,7 +79,7 @@ class Element {
   std::array<double, mesh::dim> centroid() const { return centroid_; }
 
   //! Append tag to element
-  void tag(const unsigned& tag) { vec_tags_.push_back(tag); }
+  void tag(unsigned tag) { vec_tags_.push_back(tag); }
 
   //! Return tags
   std::vector<unsigned> vec_tags() { return vec_tags_; }
