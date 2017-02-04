@@ -26,6 +26,7 @@ void Mesh::read_msh_file(const std::string& filename) {
     read_elements(file);
     read_surfaces(file);
   }
+  file.close();
 }
 
 //! Read keywords
@@ -107,24 +108,20 @@ void Mesh::read_elements(std::ifstream& file) {
       }
 
       // Find the number of nodes for an element type
-      nnodes = std::numeric_limits<unsigned>::max();
-      auto search = mesh::map_element_type_nodes.find(element_type);
-      if (search != mesh::map_element_type_nodes.end()) nnodes = search->second;
+      nnodes = mesh::map_element_type_nodes.at(element_type);
 
-      if (nnodes != std::numeric_limits<unsigned>::max()) {
-        for (unsigned nodes = 0; nodes < nnodes; ++nodes) {
-          istream >> node_id;
-          element->add_vid(node_id);
-          std::shared_ptr<Vertex> vptr = this->vertex_ptr_at_id(node_id);
-          if (vptr) element->vertex_ptr(vptr);
-        }
+      for (unsigned nodes = 0; nodes < nnodes; ++nodes) {
+        istream >> node_id;
+        element->add_vid(node_id);
+        auto vptr = this->vertex_ptr_at_id(node_id);
+        if (vptr) element->vertex_ptr(vptr);
       }
 
       // Calculate centroid and print coordinates into nodes.txt
       if (element_type == 4) {
         element->compute_centroid();
-        std::array<double, 3> centroid_ = element->centroid();
-        this->add_centroid(centroid_);
+        std::array<double, 3> centroid = element->centroid();
+        this->add_centroid(centroid);
       }
       this->element_ptr(element);
     } else
@@ -279,8 +276,7 @@ void Mesh::read_vertices(std::ifstream& file) {
 void Mesh::write_nodes() {
   std::ofstream nodestream;
   nodestream.open("nodes.txt", std::ofstream::out);
-  auto centroids = this->return_vec_centroid();
-  for (const auto& centroid : centroids) {
+  for (const auto& centroid : centroids_) {
     nodestream << std::left << std::setw(10) << centroid.at(0) << '\t'
                << std::setw(10) << centroid.at(1) << '\t' << std::setw(10)
                << centroid.at(2) << '\n';

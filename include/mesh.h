@@ -109,12 +109,12 @@ class Mesh {
 
   //! Add centroid to list
   void add_centroid(const std::array<double, 3>& centroid) {
-    centroid_.push_back(centroid);
+    centroids_.push_back(centroid);
   }
 
   //! Return vector of centroid coordinates
   std::vector<std::array<double, 3>> return_vec_centroid() const {
-    return centroid_;
+    return centroids_;
   }
 
  private:
@@ -157,6 +157,6 @@ class Mesh {
   std::vector<std::pair<unsigned, unsigned>> fracture_pairs_;
 
   //! Centroid
-  std::vector<std::array<double, 3>> centroid_;
+  std::vector<std::array<double, 3>> centroids_;
 };
 #endif  // READ_GMSH_MESH_H_
