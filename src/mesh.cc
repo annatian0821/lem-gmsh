@@ -118,8 +118,11 @@ void Mesh::read_elements(std::ifstream& file) {
       }
 
       // Calculate centroid and print coordinates into nodes.txt
-      if (element_type == 4)
+      if (element_type == 4) {
         element->compute_centroid();
+        std::array<double, 3> centroid = element->centroid();
+        centroids_.push_back(centroid);
+      }
 
       this->element_ptr(element);
     } else
@@ -207,12 +210,26 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist,
     const auto element_type = element->type();
 
     if (element_id != eid && element_type == 4) {
+      auto fcentroid = felement->centroid();
+      auto centroid = element->centroid();
       auto vlist = element->vec_vertex_ids();
       std::sort(vlist.begin(), vlist.end());
       std::vector<unsigned> vintersect;
       std::set_intersection(vfraclist.begin(), vfraclist.end(), vlist.begin(),
                             vlist.end(), std::back_inserter(vintersect));
       if (vintersect.size() == 3) {
+        // auto x = (fcentroid.at(0) + centroid.at(0)) / 2.;
+        // auto y = (fcentroid.at(1) + centroid.at(1)) / 2.;
+        // auto z = (fcentroid.at(2) + centroid.at(2)) / 2.;
+
+        // if (fcentroid.at(2) > centroid.at(2)) {
+        //   felement->centroid({x, y, z + 0.05});
+        //   element->centroid({x, y, z - 0.05});
+        // } else {
+        //   felement->centroid({x, y, z - 0.05});
+        //   element->centroid({x, y, z + 0.05});
+        // }
+
         if (fracture_pairs_.first == -1)
           fracture_pairs_.first = final_node_id;
         else
@@ -276,13 +293,10 @@ void Mesh::read_vertices(std::ifstream& file) {
 void Mesh::write_nodes() {
   std::ofstream nodestream;
   nodestream.open("nodes.txt", std::ofstream::out);
-  for (const auto& element : elements_) {
-    if (element->type() == 4) {
-      auto centroid = element->centroid();
-      nodestream << std::left << std::setw(10) << centroid.at(0) << '\t'
-                 << std::setw(10) << centroid.at(1) << '\t' << std::setw(10)
-                 << centroid.at(2) << '\n';
-    }
+ for (const auto& centroid : centroids_) {
+   nodestream << std::left << std::setw(10) << centroid.at(0) << '\t'
+              << std::setw(10) << centroid.at(1) << '\t' << std::setw(10)
+              << centroid.at(2) << '\n';
   }
   nodestream.close();
 }

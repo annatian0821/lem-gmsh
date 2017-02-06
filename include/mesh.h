@@ -148,5 +148,8 @@ class Mesh {
 
   //! List of fracture pairs
   std::vector<std::pair<unsigned, unsigned>> fracture_pairs_;
+
+  //! Centroid
+  std::vector<std::array<double, 3>> centroids_;
 };
 #endif  // READ_GMSH_MESH_H_
