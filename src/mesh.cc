@@ -289,6 +289,25 @@ void Mesh::read_vertices(std::ifstream& file) {
   }
 }
 
+void Mesh::align_fractures() {
+  for (const auto& fracture_pair : fracture_pairs_) {
+    auto centroid1 = centroids_.at(fracture_pair.first);
+    auto centroid2 = centroids_.at(fracture_pair.second);
+
+    const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
+    const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
+    auto z = (centroid1.at(2) + centroid2.at(2)) / 2.;
+    double diff = 0.01;
+    if (centroid1.at(2) > centroid2.at(2)) {
+      centroids_.at(fracture_pair.first) = {x, y, z + diff};
+      centroids_.at(fracture_pair.second) = {x, y, z - diff};
+    } else {
+      centroids_.at(fracture_pair.first) = {x, y, z - diff};
+      centroids_.at(fracture_pair.second) = {x, y, z + diff};
+    }
+
+  }
+}
 //! Print nodes in txt file
 void Mesh::write_nodes() {
   std::ofstream nodestream;

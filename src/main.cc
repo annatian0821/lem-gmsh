@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
   mesh->read_msh_file(filename);
 
   // Print out fracture pairs and nodes coordinates
+  mesh->align_fractures();
   mesh->write_fractures();
   mesh->write_nodes();
 }

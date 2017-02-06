@@ -110,6 +110,9 @@ class Mesh {
   //! Print fracture pairs in txt file
   void write_fractures();
 
+  //! Align fracture
+  void align_fractures();
+
  private:
   // Return the vertex pointer for a given index
   std::shared_ptr<Vertex> vertex_ptr(unsigned index) const {
