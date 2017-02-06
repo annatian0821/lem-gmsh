@@ -72,7 +72,7 @@ class Mesh {
 
   // Frac pairs
   void frac_pairs(unsigned element_id, std::vector<unsigned>& vlist,
-                  std::shared_ptr<Element>& felement);
+                  std::shared_ptr<Element>&);
 
   // Find list of element pointers for a given surface id
   std::vector<std::shared_ptr<Element>> find_element_id(
@@ -109,16 +109,6 @@ class Mesh {
 
   //! Print fracture pairs in txt file
   void write_fractures();
-
-  //! Add centroid to list
-  void add_centroid(const std::array<double, 3>& centroid) {
-    centroids_.push_back(centroid);
-  }
-
-  //! Return vector of centroid coordinates
-  std::vector<std::array<double, 3>> return_vec_centroid() const {
-    return centroids_;
-  }
 
  private:
   // Return the vertex pointer for a given index
