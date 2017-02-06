@@ -1,6 +1,8 @@
 #ifndef READ_GMSH_MESH_H_
 #define READ_GMSH_MESH_H_
 
+#include <cmath>
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>

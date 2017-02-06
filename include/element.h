@@ -76,8 +76,13 @@ class Element {
   void compute_centroid();
 
   //! Assign centroid of the element
-  void centroid(std::array<double, mesh::dim>& centroid) {
+  void centroid(const std::array<double, mesh::dim>& centroid) {
     centroid_ = centroid;
+  }
+
+  //! Assign centroid of the element
+  void centroid_at(unsigned index, double coordinate) {
+    centroid_.at(index) = coordinate;
   }
 
   //! Return centroid of the element
