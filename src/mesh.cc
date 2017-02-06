@@ -213,6 +213,7 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist,
       std::set_intersection(vfraclist.begin(), vfraclist.end(), vlist.begin(),
                             vlist.end(), std::back_inserter(vintersect));
       if (vintersect.size() == 3) {
+        // To align centroids at equidistance from the fracture
         auto fcentroid = felement->centroid();
         auto centroid = element->centroid();
         const double dist = std::fabs((fcentroid.at(2) - centroid.at(2) / 2.0));
@@ -220,11 +221,10 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist,
         double sign = 1.0;
         if (fcentroid.at(2) < 0) sign = -1.0;
         felement->centroid_at(2, sign * dist);
-
         sign = 1.0;
         if (centroid.at(2) < 0) sign = -1.0;
-
         element->centroid_at(2, sign * dist);
+
         if (fracture_pairs_.first == -1)
           fracture_pairs_.first = final_node_id;
         else
