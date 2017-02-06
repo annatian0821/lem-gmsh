@@ -69,7 +69,8 @@ class Mesh {
   }
 
   // Frac pairs
-  void frac_pairs(unsigned element_id, std::vector<unsigned>& vlist);
+  void frac_pairs(unsigned element_id, std::vector<unsigned>& vlist,
+                  std::shared_ptr<Element>& felement);
 
   // Find list of element pointers for a given surface id
   std::vector<std::shared_ptr<Element>> find_element_id(

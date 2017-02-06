@@ -75,7 +75,12 @@ class Element {
   //! Compute centroid of the element
   void compute_centroid();
 
-  //! Retrun centroid of the element
+  //! Assign centroid of the element
+  void centroid(std::array<double, mesh::dim>& centroid) {
+    centroid_ = centroid;
+  }
+
+  //! Return centroid of the element
   std::array<double, mesh::dim> centroid() const { return centroid_; }
 
   //! Append tag to element

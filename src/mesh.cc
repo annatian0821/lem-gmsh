@@ -118,11 +118,9 @@ void Mesh::read_elements(std::ifstream& file) {
       }
 
       // Calculate centroid and print coordinates into nodes.txt
-      if (element_type == 4) {
+      if (element_type == 4)
         element->compute_centroid();
-        std::array<double, 3> centroid = element->centroid();
-        this->add_centroid(centroid);
-      }
+
       this->element_ptr(element);
     } else
       std::cerr << "Invalid entry for node: " << line << '\n';
@@ -181,11 +179,11 @@ void Mesh::read_surfaces(std::ifstream& file) {
         // Get list of element pointers for surface_id
         auto elements = this->find_element_id(surface_id);
         // Get list of vertex pointers for every element
-        for (const auto& element : elements) {
+        for (auto& element : elements) {
           const auto element_id = element->id();
           auto vertex_id_list = element->vec_vertex_ids();
           // Find fracture pairs
-          this->frac_pairs(element_id, vertex_id_list);
+          this->frac_pairs(element_id, vertex_id_list, element);
         }
       }
       this->surface_ptr(surface);
@@ -195,11 +193,14 @@ void Mesh::read_surfaces(std::ifstream& file) {
 }
 
 //! Find fracture pairs
-void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist) {
+void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist,
+                      std::shared_ptr<Element>& felement) {
 
   std::pair<unsigned, unsigned> fracture_pairs_;
   fracture_pairs_ = std::make_pair(-1, -1);
   unsigned final_node_id = 0;
+
+  std::sort(vfraclist.begin(), vfraclist.end());
 
   for (const auto& element : elements_) {
     const auto element_id = element->id();
@@ -207,7 +208,6 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist) {
 
     if (element_id != eid && element_type == 4) {
       auto vlist = element->vec_vertex_ids();
-      std::sort(vfraclist.begin(), vfraclist.end());
       std::sort(vlist.begin(), vlist.end());
       std::vector<unsigned> vintersect;
       std::set_intersection(vfraclist.begin(), vfraclist.end(), vlist.begin(),
@@ -276,10 +276,13 @@ void Mesh::read_vertices(std::ifstream& file) {
 void Mesh::write_nodes() {
   std::ofstream nodestream;
   nodestream.open("nodes.txt", std::ofstream::out);
-  for (const auto& centroid : centroids_) {
-    nodestream << std::left << std::setw(10) << centroid.at(0) << '\t'
-               << std::setw(10) << centroid.at(1) << '\t' << std::setw(10)
-               << centroid.at(2) << '\n';
+  for (const auto& element : elements_) {
+    if (element->type() == 4) {
+      auto centroid = element->centroid();
+      nodestream << std::left << std::setw(10) << centroid.at(0) << '\t'
+                 << std::setw(10) << centroid.at(1) << '\t' << std::setw(10)
+                 << centroid.at(2) << '\n';
+    }
   }
   nodestream.close();
 }
