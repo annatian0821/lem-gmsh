@@ -24,6 +24,12 @@ Point(11) = {0.5,0.75,0.5, lc};
 Point(12) = {0.25,0.5,0.5, lc};
 Point(13) = {0.5,0.25,0.5, lc};
 
+// Week Plane
+Point(14) = {0,0.,0.5, lc};
+Point(15) = {1.,0.,0.5, lc};
+Point(16) = {1.,1.,0.5, lc};
+Point(17) = {0.,1.,0.5, lc};
+
 // The distribution of the mesh element sizes is then obtained by
 // interpolation of these characteristic lengths throughout the
 // geometry.
@@ -46,6 +52,11 @@ Circle(14) = {11,9,12};
 Circle(15) = {12,9,13};
 Circle(16) = {13,9,10};
 
+Line(17) = {14,15};
+Line(18) = {15,16};
+Line(19) = {16,17};
+Line(20) = {17,14};
+
 Line Loop(1) = {1,2,3,4};
 Line Loop(2) = {1,6,-9,-5};
 Line Loop(3) = {2,7,-10,-6};
@@ -54,6 +65,7 @@ Line Loop(5) = {-4,8,12,-5};
 Line Loop(6) = {9,10,11,12};
 
 Line Loop(7) = {13,14,15,16};
+Line Loop(8) = {17,18,19,20};
 
 Plane Surface(1) = {1};
 Plane Surface(2) = {2};
@@ -62,6 +74,7 @@ Plane Surface(4) = {4};
 Plane Surface(5) = {5};
 Plane Surface(6) = {6};
 Plane Surface(7) = {7};
+Plane Surface(8) = {8,7};
 
 Surface Loop(1) = {1,2,3,4,5,6};
 Volume(1) = {1};
@@ -107,6 +120,8 @@ TopSurface = 1006;
 Physical Surface("TopSurface") = {6} ;
 Fracture = 2001;
 Physical Surface("Fracture") = {7} ;
+WeakPlane = 2002;
+Physical Surface("WeakPlane") = {8} ;
 
 MyVolume = 10001;
 Physical Volume("MyVolume") = {1} ;
