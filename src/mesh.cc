@@ -186,7 +186,8 @@ void Mesh::read_surfaces(std::ifstream& file) {
           const auto element_id = element->id();
           auto vertex_id_list = element->vec_vertex_ids();
           // Find fracture pairs
-          this->add_frac_pair(frac_pairs(element_id, vertex_id_list, element));
+          fracture_pairs_.emplace_back(
+              node_pairs(element_id, vertex_id_list, element));
         }
       }
       this->surface_ptr(surface);
@@ -196,39 +197,36 @@ void Mesh::read_surfaces(std::ifstream& file) {
 }
 
 //! Find fracture pairs
-std::pair<unsigned, unsigned> Mesh::frac_pairs(
-    unsigned eid, std::vector<unsigned>& vfraclist,
+std::pair<unsigned, unsigned> Mesh::node_pairs(
+    unsigned eid, std::vector<unsigned>& vertices,
     std::shared_ptr<Element>& felement) {
 
-  std::pair<unsigned, unsigned> fracture_pairs_;
-  fracture_pairs_ = std::make_pair(-1, -1);
+  std::pair<unsigned, unsigned> node_pairs = std::make_pair(-1, -1);
   unsigned final_node_id = 0;
 
-  std::sort(vfraclist.begin(), vfraclist.end());
+  std::sort(vertices.begin(), vertices.end());
 
   for (const auto& element : elements_) {
     const auto element_id = element->id();
     const auto element_type = element->type();
 
     if (element_id != eid && element_type == 4) {
-      auto fcentroid = felement->centroid();
-      auto centroid = element->centroid();
       auto vlist = element->vec_vertex_ids();
       std::sort(vlist.begin(), vlist.end());
       std::vector<unsigned> vintersect;
-      std::set_intersection(vfraclist.begin(), vfraclist.end(), vlist.begin(),
+      std::set_intersection(vertices.begin(), vertices.end(), vlist.begin(),
                             vlist.end(), std::back_inserter(vintersect));
       if (vintersect.size() == 3) {
 
-        if (fracture_pairs_.first == -1)
-          fracture_pairs_.first = final_node_id;
+        if (node_pairs.first == -1)
+          node_pairs.first = final_node_id;
         else
-          fracture_pairs_.second = final_node_id;
+          node_pairs.second = final_node_id;
       }
       ++final_node_id;
     }
   }
-  return fracture_pairs_;
+  return node_pairs;
   //  this->add_frac_pair(fracture_pairs_);
 }
 
