@@ -31,6 +31,12 @@ class Element {
     centroid_ = {0.};
   }
 
+  //! return Volume id
+  unsigned volume_id() const { return volume_id_; }
+
+  //! assign Volume id
+  void volume_id(unsigned volume_id) { volume_id_ = volume_id; }
+
   //! Return id of the element
   unsigned id() const { return id_; }
 
@@ -100,6 +106,8 @@ class Element {
  private:
   //! Element ID
   unsigned id_;
+  //! Volume id
+  unsigned volume_id_{std::numeric_limits<unsigned>::max()};
   //! Element type
   unsigned type_;
   //! Centroid of the element

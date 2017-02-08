@@ -85,6 +85,8 @@ void Mesh::read_elements(std::ifstream& file) {
   unsigned node_id = std::numeric_limits<unsigned>::max();
   //! Object id
   unsigned object_id = std::numeric_limits<unsigned>::max();
+  //! Volume id
+  unsigned volume_id = 0;
 
   // Iterate through all vertices in the mesh file
   for (unsigned i = 0; i < nelements; ++i) {
@@ -120,8 +122,9 @@ void Mesh::read_elements(std::ifstream& file) {
       // Calculate centroid and print coordinates into nodes.txt
       if (element_type == 4) {
         element->compute_centroid();
-        std::array<double, 3> centroid = element->centroid();
-        centroids_.push_back(centroid);
+        element->volume_id(volume_id);
+        volume_elements_[volume_id] = element;
+        ++volume_id;
       }
 
       this->element_ptr(element);
@@ -315,12 +318,11 @@ void Mesh::align_fractures() {
 
 
 void Mesh::align_weakplane() {
-  unsigned i = 0;
   for (const auto& weakplane_pair : weakplane_node_pairs_) {
     std::cout << "Weak plane: " << weakplane_pair.first << " of "
               << weakplane_pair.second << "\n";
-    auto centroid1 = centroids_.at(weakplane_pair.first);
-    auto centroid2 = centroids_.at(weakplane_pair.second);
+    auto centroid1 = volume_elements_.at(weakplane_pair.first)->centroid();
+    auto centroid2 = volume_elements_.at(weakplane_pair.second)->centroid();
 
     const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
     const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
@@ -333,9 +335,6 @@ void Mesh::align_weakplane() {
       centroids_.at(weakplane_pair.first) = {x, y, z - diff};
       centroids_.at(weakplane_pair.second) = {x, y, z + diff};
     }
-    std::cout << "Weak plane: " << i << " of " << weakplane_node_pairs_.size()
-              << "\n";
-    ++i;
   }
 }
 
@@ -343,7 +342,8 @@ void Mesh::align_weakplane() {
 void Mesh::write_nodes() {
   std::ofstream nodestream;
   nodestream.open("nodes.txt", std::ofstream::out);
- for (const auto& centroid : centroids_) {
+ for (const auto& volume_element : volume_elements_) {
+   const auto centroid = volume_element.second->centroid();
    nodestream << std::left << std::setw(10) << centroid.at(0) << '\t'
               << std::setw(10) << centroid.at(1) << '\t' << std::setw(10)
               << centroid.at(2) << '\n';

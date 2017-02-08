@@ -150,10 +150,10 @@ class Mesh {
   //! List of fracture pairs
   std::vector<std::pair<unsigned, unsigned>> fracture_pairs_;
 
-  //! List of weake plane nodes
+  //! List of weak plane nodes
   std::vector<std::pair<unsigned, unsigned>> weakplane_node_pairs_;
 
-  //! Centroid
-  std::vector<std::array<double, 3>> centroids_;
+  //! Map of volumeid to element
+  std::map<unsigned, std::shared_ptr<Element>> volume_elements_;
 };
 #endif  // READ_GMSH_MESH_H_
