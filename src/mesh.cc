@@ -178,8 +178,8 @@ void Mesh::read_surfaces(std::ifstream& file) {
 
       // Find if its fracture surface or not
       // Get fracture pairs using pointers
-      const auto key = "Fracture";
-      if (this->find_surface(object_name, key)) {
+      const auto frac_key = "Fracture";
+      if (this->find_surface(object_name, frac_key)) {
         // Get list of element pointers for surface_id
         auto elements = this->find_element_id(surface_id);
         // Get list of vertex pointers for every element
@@ -191,6 +191,23 @@ void Mesh::read_surfaces(std::ifstream& file) {
               node_pairs(element_id, vertex_id_list, element));
         }
       }
+
+      // Find if its weak plane surface or not
+      // Get weak plane node pairs using pointers
+      const auto key = "WeakPlane";
+      if (this->find_surface(object_name, key)) {
+        // Get list of element pointers for surface_id
+        auto elements = this->find_element_id(surface_id);
+        // Get list of vertex pointers for every element
+        for (auto& element : elements) {
+          const auto element_id = element->id();
+          auto vertex_id_list = element->vec_vertex_ids();
+          // Find fracture pairs
+          weakplane_node_pairs_.emplace_back(
+              node_pairs(element_id, vertex_id_list, element));
+        }
+      }
+
       this->surface_ptr(surface);
     } else
       std::cerr << "Invalid entry for node: " << line << '\n';
