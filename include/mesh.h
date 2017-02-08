@@ -95,14 +95,6 @@ class Mesh {
       return false;
   }
 
-  //! Identify fracture surface
-  bool find_weak_plane(const std::string& object_name) {
-    if (object_name.find("WeakPlane") == true)
-      return true;
-    else
-      return false;
-  }
-
   //! Return vector of frac pairs
   std::vector<std::pair<unsigned, unsigned>> return_fracture_pairs() const {
     return fracture_pairs_;
