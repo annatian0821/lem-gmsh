@@ -71,8 +71,9 @@ class Mesh {
   }
 
   // Frac pairs
-  void frac_pairs(unsigned element_id, std::vector<unsigned>& vlist,
-                  std::shared_ptr<Element>&);
+  std::pair<unsigned, unsigned> frac_pairs(unsigned element_id,
+                                           std::vector<unsigned>& vlist,
+                                           std::shared_ptr<Element>&);
 
   // Find list of element pointers for a given surface id
   std::vector<std::shared_ptr<Element>> find_element_id(
@@ -89,6 +90,14 @@ class Mesh {
   //! Identify fracture surface
   bool find_fracture_surface(const std::string& object_name) {
     if (object_name.find("Fracture") == true)
+      return true;
+    else
+      return false;
+  }
+
+  //! Identify fracture surface
+  bool find_weak_plane(const std::string& object_name) {
+    if (object_name.find("WeakPlane") == true)
       return true;
     else
       return false;

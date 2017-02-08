@@ -186,7 +186,7 @@ void Mesh::read_surfaces(std::ifstream& file) {
           const auto element_id = element->id();
           auto vertex_id_list = element->vec_vertex_ids();
           // Find fracture pairs
-          this->frac_pairs(element_id, vertex_id_list, element);
+          this->add_frac_pair(frac_pairs(element_id, vertex_id_list, element));
         }
       }
       this->surface_ptr(surface);
@@ -196,8 +196,9 @@ void Mesh::read_surfaces(std::ifstream& file) {
 }
 
 //! Find fracture pairs
-void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist,
-                      std::shared_ptr<Element>& felement) {
+std::pair<unsigned, unsigned> Mesh::frac_pairs(
+    unsigned eid, std::vector<unsigned>& vfraclist,
+    std::shared_ptr<Element>& felement) {
 
   std::pair<unsigned, unsigned> fracture_pairs_;
   fracture_pairs_ = std::make_pair(-1, -1);
@@ -218,17 +219,6 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist,
       std::set_intersection(vfraclist.begin(), vfraclist.end(), vlist.begin(),
                             vlist.end(), std::back_inserter(vintersect));
       if (vintersect.size() == 3) {
-        // auto x = (fcentroid.at(0) + centroid.at(0)) / 2.;
-        // auto y = (fcentroid.at(1) + centroid.at(1)) / 2.;
-        // auto z = (fcentroid.at(2) + centroid.at(2)) / 2.;
-
-        // if (fcentroid.at(2) > centroid.at(2)) {
-        //   felement->centroid({x, y, z + 0.05});
-        //   element->centroid({x, y, z - 0.05});
-        // } else {
-        //   felement->centroid({x, y, z - 0.05});
-        //   element->centroid({x, y, z + 0.05});
-        // }
 
         if (fracture_pairs_.first == -1)
           fracture_pairs_.first = final_node_id;
@@ -238,7 +228,8 @@ void Mesh::frac_pairs(unsigned eid, std::vector<unsigned>& vfraclist,
       ++final_node_id;
     }
   }
-  this->add_frac_pair(fracture_pairs_);
+  return fracture_pairs_;
+  //  this->add_frac_pair(fracture_pairs_);
 }
 
 //! Read ids and coordinates of vertices
