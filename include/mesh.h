@@ -88,8 +88,8 @@ class Mesh {
   }
 
   //! Identify fracture surface
-  bool find_fracture_surface(const std::string& object_name) {
-    if (object_name.find("Fracture") == true)
+  bool find_surface(const std::string& object_name, const std::string& key) {
+    if (object_name.find(key) == true)
       return true;
     else
       return false;

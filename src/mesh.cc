@@ -178,7 +178,8 @@ void Mesh::read_surfaces(std::ifstream& file) {
 
       // Find if its fracture surface or not
       // Get fracture pairs using pointers
-      if (this->find_fracture_surface(object_name)) {
+      const auto key = "Fracture";
+      if (this->find_surface(object_name, key)) {
         // Get list of element pointers for surface_id
         auto elements = this->find_element_id(surface_id);
         // Get list of vertex pointers for every element
