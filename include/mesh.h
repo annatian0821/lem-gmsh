@@ -72,8 +72,7 @@ class Mesh {
 
   // Frac pairs
   std::pair<unsigned, unsigned> node_pairs(unsigned element_id,
-                                           std::vector<unsigned>& vertices,
-                                           std::shared_ptr<Element>&);
+                                           std::vector<unsigned>& vertices);
 
   // Find list of element pointers for a given surface id
   std::vector<std::shared_ptr<Element>> find_element_id(
@@ -108,6 +107,9 @@ class Mesh {
 
   //! Align fracture
   void align_fractures();
+
+  //! Align weakplane
+  void align_weakplane();
 
  private:
   // Return the vertex pointer for a given index

@@ -74,7 +74,7 @@ Plane Surface(4) = {4};
 Plane Surface(5) = {5};
 Plane Surface(6) = {6};
 Plane Surface(7) = {7};
-Plane Surface(8) = {8,7};
+Plane Surface(8) = {8,-7};
 
 Surface Loop(1) = {1,2,3,4,5,6};
 Volume(1) = {1};
@@ -121,7 +121,7 @@ Physical Surface("TopSurface") = {6} ;
 Fracture = 2001;
 Physical Surface("Fracture") = {7} ;
 WeakPlane = 2002;
-Physical Surface("WeakPlane") = {8} ;
+Physical Surface("Fracture2") = {8} ;
 
 MyVolume = 10001;
 Physical Volume("MyVolume") = {1} ;

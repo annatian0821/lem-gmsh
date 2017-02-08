@@ -183,12 +183,12 @@ void Mesh::read_surfaces(std::ifstream& file) {
         // Get list of element pointers for surface_id
         auto elements = this->find_element_id(surface_id);
         // Get list of vertex pointers for every element
-        for (auto& element : elements) {
+        for (const auto& element : elements) {
           const auto element_id = element->id();
           auto vertex_id_list = element->vec_vertex_ids();
           // Find fracture pairs
           fracture_pairs_.emplace_back(
-              node_pairs(element_id, vertex_id_list, element));
+              this->node_pairs(element_id, vertex_id_list));
         }
       }
 
@@ -199,12 +199,12 @@ void Mesh::read_surfaces(std::ifstream& file) {
         // Get list of element pointers for surface_id
         auto elements = this->find_element_id(surface_id);
         // Get list of vertex pointers for every element
-        for (auto& element : elements) {
+        for (const auto& element : elements) {
           const auto element_id = element->id();
           auto vertex_id_list = element->vec_vertex_ids();
           // Find fracture pairs
           weakplane_node_pairs_.emplace_back(
-              node_pairs(element_id, vertex_id_list, element));
+              this->node_pairs(element_id, vertex_id_list));
         }
       }
 
@@ -216,8 +216,7 @@ void Mesh::read_surfaces(std::ifstream& file) {
 
 //! Find fracture pairs
 std::pair<unsigned, unsigned> Mesh::node_pairs(
-    unsigned eid, std::vector<unsigned>& vertices,
-    std::shared_ptr<Element>& felement) {
+    unsigned eid, std::vector<unsigned>& vertices) {
 
   std::pair<unsigned, unsigned> node_pairs = std::make_pair(-1, -1);
   unsigned final_node_id = 0;
@@ -235,7 +234,6 @@ std::pair<unsigned, unsigned> Mesh::node_pairs(
       std::set_intersection(vertices.begin(), vertices.end(), vlist.begin(),
                             vlist.end(), std::back_inserter(vintersect));
       if (vintersect.size() == 3) {
-
         if (node_pairs.first == -1)
           node_pairs.first = final_node_id;
         else
@@ -303,7 +301,7 @@ void Mesh::align_fractures() {
 
     const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
     const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
-    auto z = (centroid1.at(2) + centroid2.at(2)) / 2.;
+    auto z = 0.5; //(centroid1.at(2) + centroid2.at(2)) / 2.;
     double diff = 0.01;
     if (centroid1.at(2) > centroid2.at(2)) {
       centroids_.at(fracture_pair.first) = {x, y, z + diff};
@@ -312,9 +310,35 @@ void Mesh::align_fractures() {
       centroids_.at(fracture_pair.first) = {x, y, z - diff};
       centroids_.at(fracture_pair.second) = {x, y, z + diff};
     }
-
   }
 }
+
+
+void Mesh::align_weakplane() {
+  unsigned i = 0;
+  for (const auto& weakplane_pair : weakplane_node_pairs_) {
+    std::cout << "Weak plane: " << weakplane_pair.first << " of "
+              << weakplane_pair.second << "\n";
+    auto centroid1 = centroids_.at(weakplane_pair.first);
+    auto centroid2 = centroids_.at(weakplane_pair.second);
+
+    const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
+    const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
+    auto z = 0.5; //(centroid1.at(2) + centroid2.at(2)) / 2.;
+    double diff = 0.01;
+    if (centroid1.at(2) > centroid2.at(2)) {
+      centroids_.at(weakplane_pair.first) = {x, y, z + diff};
+      centroids_.at(weakplane_pair.second) = {x, y, z - diff};
+    } else {
+      centroids_.at(weakplane_pair.first) = {x, y, z - diff};
+      centroids_.at(weakplane_pair.second) = {x, y, z + diff};
+    }
+    std::cout << "Weak plane: " << i << " of " << weakplane_node_pairs_.size()
+              << "\n";
+    ++i;
+  }
+}
+
 //! Print nodes in txt file
 void Mesh::write_nodes() {
   std::ofstream nodestream;
