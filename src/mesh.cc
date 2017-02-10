@@ -300,19 +300,21 @@ void Mesh::read_vertices(std::ifstream& file) {
 
 void Mesh::align_fractures() {
   for (const auto& fracture_pair : fracture_pairs_) {
-    auto centroid1 = volume_elements_.at(fracture_pair.first)->centroid();
-    auto centroid2 = volume_elements_.at(fracture_pair.second)->centroid();
+    if (fracture_pair.first != std::numeric_limits<unsigned>::max()) {
+      auto centroid1 = volume_elements_.at(fracture_pair.first)->centroid();
+      auto centroid2 = volume_elements_.at(fracture_pair.second)->centroid();
 
-    const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
-    const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
-    auto z = 0.5; //(centroid1.at(2) + centroid2.at(2)) / 2.;
-    double diff = 0.01;
-    if (centroid1.at(2) > centroid2.at(2)) {
-      volume_elements_.at(fracture_pair.first)->centroid({x, y, z + diff});
-      volume_elements_.at(fracture_pair.second)->centroid({x, y, z - diff});
-    } else {
-      volume_elements_.at(fracture_pair.first)->centroid({x, y, z - diff});
-      volume_elements_.at(fracture_pair.second)->centroid({x, y, z + diff});
+      const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
+      const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
+      auto z = (centroid1.at(2) + centroid2.at(2)) / 2.;
+      double diff = 0.01;
+      if (centroid1.at(2) > centroid2.at(2)) {
+        volume_elements_.at(fracture_pair.first)->centroid({x, y, z + diff});
+        volume_elements_.at(fracture_pair.second)->centroid({x, y, z - diff});
+      } else {
+        volume_elements_.at(fracture_pair.first)->centroid({x, y, z - diff});
+        volume_elements_.at(fracture_pair.second)->centroid({x, y, z + diff});
+      }
     }
   }
 }
