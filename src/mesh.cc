@@ -123,7 +123,8 @@ void Mesh::read_elements(std::ifstream& file) {
       if (element_type == 4) {
         element->compute_centroid();
         element->volume_id(volume_id);
-        volume_elements_[volume_id] = element;
+        if (volume_id != std::numeric_limits<unsigned>::max())
+          volume_elements_[volume_id] = element;
         ++volume_id;
       }
 
@@ -306,7 +307,7 @@ void Mesh::align_fractures() {
 
       const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
       const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
-      auto z = (centroid1.at(2) + centroid2.at(2)) / 2.;
+      auto z = 0.5; // (centroid1.at(2) + centroid2.at(2)) / 2.;
       double diff = 0.01;
       if (centroid1.at(2) > centroid2.at(2)) {
         volume_elements_.at(fracture_pair.first)->centroid({x, y, z + diff});
@@ -321,24 +322,27 @@ void Mesh::align_fractures() {
 
 
 void Mesh::align_weakplane() {
+  unsigned id = 0;
   for (const auto& weakplane_pair : weakplane_node_pairs_) {
-    std::cout << "Weak plane: " << weakplane_pair.first << " of "
-              << weakplane_pair.second << "\n";
-    auto centroid1 = volume_elements_.at(weakplane_pair.first)->centroid();
-    auto centroid2 = volume_elements_.at(weakplane_pair.second)->centroid();
+    if (weakplane_pair.first != std::numeric_limits<unsigned>::max()) {
+      auto centroid1 = volume_elements_.at(weakplane_pair.first)->centroid();
+      auto centroid2 = volume_elements_.at(weakplane_pair.second)->centroid();
 
-    const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
-    const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
-    auto z = 0.5; //(centroid1.at(2) + centroid2.at(2)) / 2.;
-    double diff = 0.01;
-    if (centroid1.at(2) > centroid2.at(2)) {
-      volume_elements_.at(weakplane_pair.first)->centroid({x, y, z + diff});
-      volume_elements_.at(weakplane_pair.second)->centroid({x, y, z - diff});
-    } else {
-      volume_elements_.at(weakplane_pair.first)->centroid({x, y, z - diff});
-      volume_elements_.at(weakplane_pair.second)->centroid({x, y, z + diff});
+      const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
+      const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
+      auto z = 0.5;  //(centroid1.at(2) + centroid2.at(2)) / 2.;
+      double diff = 0.01;
+      if (centroid1.at(2) > centroid2.at(2)) {
+        volume_elements_.at(weakplane_pair.first)->centroid({x, y, z + diff});
+        volume_elements_.at(weakplane_pair.second)->centroid({x, y, z - diff});
+      } else {
+        volume_elements_.at(weakplane_pair.first)->centroid({x, y, z - diff});
+        volume_elements_.at(weakplane_pair.second)->centroid({x, y, z + diff});
+      }
+      ++id;
     }
   }
+  std::cout << "WeakPlane: " << id << std::endl;
 }
 
 //! Print nodes in txt file
