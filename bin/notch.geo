@@ -1,34 +1,33 @@
 /*********************************************************************
  *
- *  Penny shaped fracture 200 x 200 x200
+ *  Notch
  *
  *********************************************************************/
 
 // Mesh size - characteristic length
-lc = 0.1;
+lc = 0.025;
 
 // 8 corner points of a cube
 Point(1) = {0, 0, 0, lc};
-Point(2) = {1.0, 0, 0, lc};
-Point(3) = {1.0, 1.0, 0, lc};
-Point(4) = {0, 1.0, 0, lc};
-Point(5) = {0, 0, 1.0, lc};
-Point(6) = {1.0, 0, 1.0, lc};
-Point(7) = {1.0, 1.0, 1.0, lc};
-Point(8) = {0, 1.0, 1.0, lc};
+Point(2) = {0.75, 0, 0, lc};
+Point(3) = {0.75, 0.75, 0, lc};
+Point(4) = {0, 0.75, 0, lc};
+Point(5) = {0, 0, 0.13, lc};
+Point(6) = {0.75, 0, 0.13, lc};
+Point(7) = {0.75, 0.75, 0.13, lc};
+Point(8) = {0, 0.75, 0.13, lc};
 
-// 5 point define a circular crack at the centre
-Point(9) = {0.5,0.5,0.5, lc};
-Point(10) = {0.75,0.5,0.5, lc};
-Point(11) = {0.5,0.75,0.5, lc};
-Point(12) = {0.25,0.5,0.5, lc};
-Point(13) = {0.5,0.25,0.5, lc};
+// 4 point define square crack # 1 near the boundary 
+Point(9) = {0.01, 0.375, 0.01, lc}; 
+Point(10) = {0.13, 0.375, 0.01, lc};
+Point(11) = {0.13, 0.375, 0.12, lc};
+Point(12) = {0.01, 0.375, 0.12, lc};
 
-// Week Plane
-Point(14) = {0.01,0.01,0.5, lc};
-Point(15) = {0.99,0.01,0.5, lc};
-Point(16) = {0.99,0.99,0.5, lc};
-Point(17) = {0.01,0.99,0.5, lc};
+// 4 point define square crack # 2 near the boundary 
+Point(13) = {0.62, 0.375, 0.01, lc};
+Point(14) = {0.74, 0.375, 0.01, lc};
+Point(15) = {0.74, 0.375, 0.12, lc};
+Point(16) = {0.62, 0.375, 0.12, lc};
 
 // The distribution of the mesh element sizes is then obtained by
 // interpolation of these characteristic lengths throughout the
@@ -47,15 +46,25 @@ Line(10) = {6,7} ;
 Line(11) = {7,8} ;
 Line(12) = {8,5} ;
 
-Circle(13) = {10,9,11};
-Circle(14) = {11,9,12};
-Circle(15) = {12,9,13};
-Circle(16) = {13,9,10};
+Line(13) = {9,10}; 
+Line(14) = {10,11}; 
+Line(15) = {11,12};
+Line(16) = {12,9}; 
 
-Line(17) = {14,15};
-Line(18) = {15,16};
-Line(19) = {16,17};
-Line(20) = {17,14};
+Line(17) = {13,14}; 
+Line(18) = {14,15}; 
+Line(19) = {15,16}; 
+Line(20) = {16,13}; 
+
+//Circle(13) = {10,9,11};
+//Circle(14) = {11,9,12};
+//Circle(15) = {12,9,13};
+//Circle(16) = {13,9,10};
+
+//Line(17) = {14,15};
+//Line(18) = {15,16};
+//Line(19) = {16,17};
+//Line(20) = {17,14};
 
 Line Loop(1) = {1,2,3,4};
 Line Loop(2) = {1,6,-9,-5};
@@ -64,8 +73,11 @@ Line Loop(4) = {3,8,-11,-7};
 Line Loop(5) = {-4,8,12,-5};
 Line Loop(6) = {9,10,11,12};
 
-Line Loop(7) = {13,14,15,16};
-Line Loop(8) = {17,18,19,20};
+Line Loop(7) = {13,14,15,16}; 
+Line Loop(8) = {17,18,19,20}; 
+
+//Line Loop(7) = {13,14,15,16};
+//Line Loop(8) = {17,18,19,20};
 
 Plane Surface(1) = {1};
 Plane Surface(2) = {2};
@@ -73,15 +85,22 @@ Plane Surface(3) = {3};
 Plane Surface(4) = {4};
 Plane Surface(5) = {5};
 Plane Surface(6) = {6};
-Plane Surface(7) = {7};
-Plane Surface(8) = {8,7};
+
+Plane Surface(7) = {7}; 
+Plane Surface(8) = {8}; 
+
+//Plane Surface(7) = {7};
+//Plane Surface(8) = {8,7};
 
 Surface Loop(1) = {1,2,3,4,5,6};
 Volume(1) = {1};
 
 Surface{7} In Volume{1};
+Surface{8} In Volume{1};  
 
-Surface{8} In Volume{1};
+//Surface{7} In Volume{1};
+
+//Surface{8} In Volume{1};
 
 BottomBottomLine = 101;
 Physical Line("BottomBottomLine") = 1;
@@ -120,10 +139,15 @@ SideLeftSurface = 1005;
 Physical Surface("SideLeftSurface") = {5} ;
 TopSurface = 1006;
 Physical Surface("TopSurface") = {6} ;
-Fracture = 2001;
-Physical Surface("Fracture") = {7} ;
-WeakPlane = 2002;
-Physical Surface("WeakPlane") = {8} ;
+Fracture1 = 2001; 
+Physical Surface("Fracture1") = {7}; 
+Fracture2 = 2002; 
+Physical Surface("Fracture2") = {8}; 
+
+//Fracture = 2001;
+//Physical Surface("Fracture") = {7} ;
+//WeakPlane = 2002;
+//Physical Surface("WeakPlane") = {8} ;
 
 MyVolume = 10001;
 Physical Volume("MyVolume") = {1} ;

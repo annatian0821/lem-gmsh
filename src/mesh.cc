@@ -306,15 +306,15 @@ void Mesh::align_fractures() {
       auto centroid2 = volume_elements_.at(fracture_pair.second)->centroid();
 
       const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
-      const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
-      auto z = 0.5; // (centroid1.at(2) + centroid2.at(2)) / 2.;
-      double diff = 0.01;
-      if (centroid1.at(2) > centroid2.at(2)) {
-        volume_elements_.at(fracture_pair.first)->centroid({x, y, z + diff});
-        volume_elements_.at(fracture_pair.second)->centroid({x, y, z - diff});
+      const auto z = (centroid1.at(2) + centroid2.at(2)) / 2.;
+      const double y = 0.375; // (centroid1.at(2) + centroid2.at(2)) / 2.;
+      double diff = 0.0025;
+      if (centroid1.at(1) > centroid2.at(1)) {
+        volume_elements_.at(fracture_pair.first)->centroid({x, y + diff, z});
+        volume_elements_.at(fracture_pair.second)->centroid({x, y - diff, z});
       } else {
-        volume_elements_.at(fracture_pair.first)->centroid({x, y, z - diff});
-        volume_elements_.at(fracture_pair.second)->centroid({x, y, z + diff});
+        volume_elements_.at(fracture_pair.first)->centroid({x, y - diff, z});
+        volume_elements_.at(fracture_pair.second)->centroid({x, y + diff, z});
       }
     }
   }
@@ -331,7 +331,7 @@ void Mesh::align_weakplane() {
       const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
       const auto y = (centroid1.at(1) + centroid2.at(1)) / 2.;
       auto z = 0.5;  //(centroid1.at(2) + centroid2.at(2)) / 2.;
-      double diff = 0.01;
+      double diff = 0.0025;
       if (centroid1.at(2) > centroid2.at(2)) {
         volume_elements_.at(weakplane_pair.first)->centroid({x, y, z + diff});
         volume_elements_.at(weakplane_pair.second)->centroid({x, y, z - diff});

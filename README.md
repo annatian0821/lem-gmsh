@@ -5,6 +5,7 @@
 [![Build status](https://api.travis-ci.org/cb-geo/lem-gmsh.svg)](https://travis-ci.org/cb-geo/lem-gmsh/builds)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/10088/badge.svg)](https://scan.coverity.com/projects/cb-geo-lem-gmsh)
 [![codecov.io](http://codecov.io/github/cb-geo/lem-gmsh/coverage.svg?branch=develop)](http://codecov.io/github/cb-geo/lem-gmsh?branch=develop)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0912b6e6e3d144d6b695067e0b815420)](https://www.codacy.com/app/CB-Geo/lem-gmsh/)
 [![](https://img.shields.io/github/issues-raw/cb-geo/lem-gmsh.svg)](https://github.com/cb-geo/lem-gmsh/issues)
 [![Project management](https://img.shields.io/badge/projects-view-ff69b4.svg)](https://github.com/cb-geo/lem-gmsh/projects/)
 
