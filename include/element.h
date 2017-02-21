@@ -64,7 +64,7 @@ class Element {
       return false;
   }
 
-  //! Return vector of  vertex ids forming the element
+  //! Return vector of vertex ids of the element
   std::vector<unsigned> vec_vertex_ids() {
     std::vector<unsigned> vec_vertex_ids_;
     vec_vertex_ids_.clear();
@@ -75,7 +75,7 @@ class Element {
     return vec_vertex_ids_;
   }
 
-  // Add a vertex id
+  //! Add a vertex id
   void add_vid(unsigned id) { vec_vertices_.push_back(id); }
 
   //! Compute centroid of the element
@@ -105,11 +105,11 @@ class Element {
 
  private:
   //! Element ID
-  unsigned id_;
+  unsigned id_{std::numeric_limits<unsigned>::max()};
   //! Volume id
   unsigned volume_id_{std::numeric_limits<unsigned>::max()};
   //! Element type
-  unsigned type_;
+  unsigned type_{std::numeric_limits<unsigned>::max()};
   //! Centroid of the element
   std::array<double, mesh::dim> centroid_;
   //! Vector of vertex pointers
@@ -119,7 +119,7 @@ class Element {
   //! Element tags
   std::vector<unsigned> vec_tags_;
   //! Object id
-  unsigned object_id_;
+  unsigned object_id_{std::numeric_limits<unsigned>::max()};
   //! List of vertices
   std::vector<unsigned> vec_vertices_;
 };
