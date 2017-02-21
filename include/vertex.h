@@ -3,17 +3,13 @@
 
 #include <array>
 
-//! Vertex class
-//! \brief Vertex for element generation
-
 const unsigned Dim = 3;
 
+//! Vertex class
+//! \brief Vertex for element generation
 class Vertex {
  public:
-  //! Constructor with id
-  explicit Vertex(unsigned id) : id_{id} {}
-
-  //! Constructor with coordinates and id
+  //! Constructor with id and coordinates
   Vertex(unsigned id, const std::array<double, Dim>& coord) : id_{id} {
     coord_ = coord;
   }

@@ -16,14 +16,7 @@
 //! \brief Element for associating element with surfaces and vertices
 class Element {
  public:
-  //! Constructor with element id
-  explicit Element(unsigned id) : id_{id} {
-    surface_list_ptr_.clear();
-    vertices_.clear();
-    centroid_ = {0.};
-  }
-
-  //! Constructor with id and element type
+  //! Element constructor with id, element type and object id.
   Element(unsigned id, unsigned type, unsigned object_id)
       : id_{id}, type_{type}, object_id_{object_id} {
     vertices_.clear();
