@@ -17,10 +17,8 @@ void Mesh::read_msh_file(const std::string& filename) {
 
   std::ifstream file;
   file.open(filename.c_str(), std::ios::in);
-  if (!file.is_open()) {
-    std::cerr << "Msh file does not exist \n";
-    std::exit(EXIT_FAILURE);
-  }
+  if (!file.is_open())
+    throw std::runtime_error("Specified GMSH file does not exist");
   if (file.good()) {
     read_vertices(file);
     read_elements(file);
@@ -32,28 +30,28 @@ void Mesh::read_msh_file(const std::string& filename) {
 //! Read keywords
 void Mesh::read_keyword(std::ifstream& file, const std::string& keyword) {
 
+  bool read_status = false;
   std::string line;
   file.clear();
   file.seekg(0, std::ios::beg);
   while (std::getline(file, line)) {
     if (line != keyword) {
       if (line.find(keyword) != std::string::npos) {
-        std::cerr << "Cannot find keyword: " << keyword << '\n';
-        std::cerr << "Line read -" << line << '-' << '\n';
         break;
       };
     } else {
-#ifdef DEBUG
-      std::cout << "Read keyword -" << keyword << "- successfully\n";
-#endif
+      std::cout << "Read keyword: " << keyword << " successfully\n";
+      read_status = true;
       break;
     }
+  }
+  if (!read_status) {
+    std::cerr << "Cannot find keyword: " << keyword << '\n';
   }
 }
 
 //! Read element ids and list of vertices associated with it
 //! \param[in] file Input file stream object of msh file
-
 //! File format
 //! $Elements
 //! number-of-elements
@@ -253,7 +251,6 @@ std::pair<unsigned, unsigned> Mesh::node_pairs(
 
 //! Read ids and coordinates of vertices
 //! \param[in] file Input file stream object of msh file
-
 //! $Nodes
 //! number-of-nodes
 //! node-number x-coord y-coord z-coord
