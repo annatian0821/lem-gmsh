@@ -103,13 +103,10 @@ class Mesh {
   void write_nodes();
 
   //! Print fracture pairs in txt file
-  void write_fractures();
+  void write_fracture_pairs();
 
   //! Align fracture
-  void align_fractures(unsigned dir);
-
-  //! Align weakplane
-  void align_weakplane();
+  bool align_nodes_on_plane(const std::string& plane, unsigned dir);
 
  private:
   // Return the vertex pointer for a given index
