@@ -106,7 +106,7 @@ class Mesh {
   void write_fractures();
 
   //! Align fracture
-  void align_fractures();
+  void align_fractures(unsigned dir);
 
   //! Align weakplane
   void align_weakplane();

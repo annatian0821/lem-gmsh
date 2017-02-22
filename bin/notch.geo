@@ -5,7 +5,10 @@
  *********************************************************************/
 
 // Mesh size - characteristic length
-lc = 0.0125;
+lc = 0.025;
+
+// Edge length
+el = 0.001;
 
 // 8 corner points of a cube
 Point(1) = {0, 0, 0, lc};
@@ -18,16 +21,16 @@ Point(7) = {0.75, 0.75, 0.13, lc};
 Point(8) = {0, 0.75, 0.13, lc};
 
 // 4 point define square crack # 1 near the boundary 
-Point(9) = {0.0+lc, 0.375, 0.01, lc}; 
-Point(10) = {0.13, 0.375, 0.01, lc};
-Point(11) = {0.13, 0.375, 0.12, lc};
-Point(12) = {0.0+lc, 0.375, 0.12, lc};
+Point(9) = {0.0+el, 0.375, 0.0+el, lc}; 
+Point(10) = {0.13, 0.375, 0.0+el, lc};
+Point(11) = {0.13, 0.375, 0.13-el, lc};
+Point(12) = {0.0+el, 0.375, 0.13-el, lc};
 
 // 4 point define square crack # 2 near the boundary 
-Point(13) = {0.62, 0.375, 0.01, lc};
-Point(14) = {0.75-lc, 0.375, 0.01, lc};
-Point(15) = {0.75-lc, 0.375, 0.12, lc};
-Point(16) = {0.62, 0.375, 0.12, lc};
+Point(13) = {0.62, 0.375, 0.0+el, lc};
+Point(14) = {0.75-el, 0.375, 0.0+el, lc};
+Point(15) = {0.75-el, 0.375, 0.13-el, lc};
+Point(16) = {0.62, 0.375, 0.13-el, lc};
 
 // The distribution of the mesh element sizes is then obtained by
 // interpolation of these characteristic lengths throughout the
@@ -56,16 +59,6 @@ Line(18) = {14,15};
 Line(19) = {15,16}; 
 Line(20) = {16,13}; 
 
-//Circle(13) = {10,9,11};
-//Circle(14) = {11,9,12};
-//Circle(15) = {12,9,13};
-//Circle(16) = {13,9,10};
-
-//Line(17) = {14,15};
-//Line(18) = {15,16};
-//Line(19) = {16,17};
-//Line(20) = {17,14};
-
 Line Loop(1) = {1,2,3,4};
 Line Loop(2) = {1,6,-9,-5};
 Line Loop(3) = {2,7,-10,-6};
@@ -73,11 +66,9 @@ Line Loop(4) = {3,8,-11,-7};
 Line Loop(5) = {-4,8,12,-5};
 Line Loop(6) = {9,10,11,12};
 
+// Fracture planes
 Line Loop(7) = {13,14,15,16}; 
 Line Loop(8) = {17,18,19,20}; 
-
-//Line Loop(7) = {13,14,15,16};
-//Line Loop(8) = {17,18,19,20};
 
 Plane Surface(1) = {1};
 Plane Surface(2) = {2};
@@ -89,18 +80,12 @@ Plane Surface(6) = {6};
 Plane Surface(7) = {7}; 
 Plane Surface(8) = {8}; 
 
-//Plane Surface(7) = {7};
-//Plane Surface(8) = {8,7};
-
 Surface Loop(1) = {1,2,3,4,5,6};
 Volume(1) = {1};
 
 Surface{7} In Volume{1};
 Surface{8} In Volume{1};  
 
-//Surface{7} In Volume{1};
-
-//Surface{8} In Volume{1};
 
 BottomBottomLine = 101;
 Physical Line("BottomBottomLine") = 1;
@@ -144,64 +129,8 @@ Physical Surface("Fracture1") = {7};
 Fracture2 = 2002; 
 Physical Surface("Fracture2") = {8}; 
 
-//Fracture = 2001;
-//Physical Surface("Fracture") = {7} ;
-//WeakPlane = 2002;
-//Physical Surface("WeakPlane") = {8} ;
-
 MyVolume = 10001;
 Physical Volume("MyVolume") = {1} ;
-
-// The third elementary entity is the surface. In order to define a
-// simple rectangular surface from the four lines defined above, a
-// line loop has first to be defined. A line loop is a list of
-// connected lines, a sign being associated with each line (depending
-// on the orientation of the line):
-
-// Line Loop(5) = {4,1,-2,3} ;
-
-// We can then define the surface as a list of line loops (only one
-// here, since there are no holes--see `t4.geo'):
-
-// Plane Surface(6) = {5} ;
-// Line{1000} In Surface{6};
-//surf = Extrude {0, 0, 0.04} { Line{102}; };
-//vol = Extrude {0, 0, 0.12} { Surface{6}; };
-//Surface{surf} In Volume{vol};
-
-// At this level, Gmsh knows everything to display the rectangular
-// surface 6 and to mesh it. An optional step is needed if we want to
-// associate specific region numbers to the various elements in the
-// mesh (e.g. to the line segments discretizing lines 1 to 4 or to the
-// triangles discretizing surface 6). This is achieved by the
-// definition of `physical entities'. Physical entities will group
-// elements belonging to several elementary entities by giving them a
-// common number (a region number).
-
-// We can for example group the points 1 and 2 into the physical
-// entity 1:
-
-// Physical Point(1) = {1,2} ;
-
-// Consequently, two punctual elements will be saved in the output
-// mesh file, both with the region number 1. The mechanism is
-// identical for line or surface elements:
-
-// MyLine = 1;
-// Physical Line(MyLine) = {102} ;
-// Physical Line(MyLine) = {1000} ;
-// MySurface = 2;
-// Physical Surface(MySurface) = {6} ;
-
-// All the line elements created during the meshing of lines 1, 2 and
-// 4 will be saved in the output mesh file with the region number 99;
-// and all the triangular elements resulting from the discretization
-// of surface 6 will be given an automatic region number (100,
-// associated with the label "My fancy surface label").
-
-// Note that if no physical entities are defined, then all the
-// elements in the mesh will be saved "as is", with their default
-// orientation.
 
 // 2D mesh algorithm (1=MeshAdapt, 2=Automatic, 5=Delaunay, 6=Frontal,
 // 7=bamg, 8=delquad)

@@ -299,25 +299,62 @@ void Mesh::read_vertices(std::ifstream& file) {
   }
 }
 
-void Mesh::align_fractures() {
+void Mesh::align_fractures(unsigned dir) {
+  double max = 0.;
+  double sum = 0.;
+  double min = std::numeric_limits<double>::max();
+  unsigned size = 0;
+  unsigned id = 0;
+  // Iterate through all fractures to determine the average, min and max
+  // coordinates of fractures
   for (const auto& fracture_pair : fracture_pairs_) {
     if (fracture_pair.first != std::numeric_limits<unsigned>::max()) {
       auto centroid1 = volume_elements_.at(fracture_pair.first)->centroid();
       auto centroid2 = volume_elements_.at(fracture_pair.second)->centroid();
 
-      const auto x = (centroid1.at(0) + centroid2.at(0)) / 2.;
-      const auto z = (centroid1.at(2) + centroid2.at(2)) / 2.;
-      const double y = 0.375; // (centroid1.at(2) + centroid2.at(2)) / 2.;
-      double diff = 0.0025;
-      if (centroid1.at(1) > centroid2.at(1)) {
-        volume_elements_.at(fracture_pair.first)->centroid({x, y + diff, z});
-        volume_elements_.at(fracture_pair.second)->centroid({x, y - diff, z});
+      if (centroid1.at(dir) > max) max = centroid1.at(dir);
+      if (centroid1.at(dir) < min) max = centroid1.at(dir);
+      if (centroid2.at(dir) > max) max = centroid2.at(dir);
+      if (centroid2.at(dir) < min) min = centroid2.at(dir);
+
+      // Average location of coordinates
+      sum += centroid1.at(dir) + centroid2.at(dir);
+      size += 2;
+
+      ++id;
+    }
+  }
+  // Evaluate the maximum difference between 2 nodes on either side of the plane
+  // Taking 80% of maximum length to reduce the length of nodes on either side.
+  const double diff = 0.8 * std::fabs(max - min) / 2.;
+  // Average location of the fracture plane
+  const double  average = sum / size;
+  for (const auto& fracture_pair : fracture_pairs_) {
+    if (fracture_pair.first != std::numeric_limits<unsigned>::max()) {
+      auto centroid1 = volume_elements_.at(fracture_pair.first)->centroid();
+      auto centroid2 = volume_elements_.at(fracture_pair.second)->centroid();
+
+      std::array<double, 3> centroid_min {0.};
+      std::array<double, 3> centroid_max {0.};
+
+      for (unsigned i = 0; i < centroid1.size(); ++i) {
+        centroid_min.at(i) = (centroid1.at(i) + centroid2.at(i)) / 2.;
+        centroid_max.at(i) = (centroid1.at(i) + centroid2.at(i)) / 2.;
+      }
+      centroid_min.at(dir) = average - diff;
+      centroid_max.at(dir) = average + diff;
+
+      // Align fracture to the plane
+      if (centroid1.at(dir) > centroid2.at(dir)) {
+        volume_elements_.at(fracture_pair.first)->centroid(centroid_max);
+        volume_elements_.at(fracture_pair.second)->centroid(centroid_min);
       } else {
-        volume_elements_.at(fracture_pair.first)->centroid({x, y - diff, z});
-        volume_elements_.at(fracture_pair.second)->centroid({x, y + diff, z});
+        volume_elements_.at(fracture_pair.first)->centroid(centroid_min);
+        volume_elements_.at(fracture_pair.second)->centroid(centroid_max);
       }
     }
   }
+  std::cout << "Fracture planes: " << id << std::endl;
 }
 
 

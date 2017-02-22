@@ -25,7 +25,8 @@ int main(int argc, char** argv) {
 
   // Print out fracture pairs and nodes coordinates
   mesh->write_fractures();
-  mesh->align_fractures();
+
+  mesh->align_fractures(1);
   //mesh->align_weakplane();
   mesh->write_nodes();
 }
