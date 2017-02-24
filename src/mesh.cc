@@ -1,6 +1,6 @@
 #include "mesh.h"
 
-//! Assign element pointer to a given index
+//! \brief Assign element pointer to a given index
 //! \param[in] index Index of the element
 //! \param[in] element Element pointer
 bool Mesh::element_ptr(unsigned index, std::shared_ptr<Element>& elementptr) {
@@ -11,7 +11,7 @@ bool Mesh::element_ptr(unsigned index, std::shared_ptr<Element>& elementptr) {
     return false;
 }
 
-//! Check if msh file exists
+//! \brief Check if msh file exists
 //! \param[in] filename Mesh file name
 void Mesh::read_msh_file(const std::string& filename) {
 
@@ -27,7 +27,9 @@ void Mesh::read_msh_file(const std::string& filename) {
   file.close();
 }
 
-//! Read keywords
+//! \brief Read keywords
+//! \param[in] file Input file stream
+//! \param[in] keyword Search for keyword
 void Mesh::read_keyword(std::ifstream& file, const std::string& keyword) {
 
   bool read_status = false;
@@ -50,14 +52,14 @@ void Mesh::read_keyword(std::ifstream& file, const std::string& keyword) {
   }
 }
 
-//! Read element ids and list of vertices associated with it
-//! \param[in] file Input file stream object of msh file
-//! File format
-//! $Elements
-//! number-of-elements
-//! elm-number elm-type number-of-tags < tag > … node-number-list
-//! …
+//! \brief Read element ids and list of vertices associated with it
+//! \details <strong>Element GMSH file format</strong><br/>
+//! $Elements<br/>
+//! number-of-elements<br/>
+//! elm-number elm-type number-of-tags < tag > … node-number-list<br/>
+//! …<br/>
 //! $EndElements
+//! \param[in] file Input file stream object of msh file
 void Mesh::read_elements(std::ifstream& file) {
   read_keyword(file, "$Elements");
 
@@ -132,7 +134,7 @@ void Mesh::read_elements(std::ifstream& file) {
   }
 }
 
-//! Read ids and types of surfaces
+//! \brief Read ids and types of surfaces
 //! \param[in] file Input file stream object of msh file
 void Mesh::read_surfaces(std::ifstream& file) {
   read_keyword(file, "$PhysicalNames");
@@ -141,7 +143,7 @@ void Mesh::read_surfaces(std::ifstream& file) {
   std::getline(file, line);
   std::istringstream istream(line);
 
-  // Total number of surfaces
+  //! Total number of surfaces
   unsigned nsurfaces;
   istream >> nsurfaces;
   std::cout << "Number of physical objects = " << nsurfaces << '\n';
@@ -191,6 +193,7 @@ void Mesh::read_surfaces(std::ifstream& file) {
           // Find fracture pairs
           fracture_pairs_.emplace_back(
               this->node_pairs(element_id, vertex_id_list));
+          std::cout << element_id << " of " << elements.size() << "\n";
         }
       }
 
@@ -217,7 +220,9 @@ void Mesh::read_surfaces(std::ifstream& file) {
   }
 }
 
-//! Find fracture pairs
+//! \brief Find fracture pairs
+//! \param[in] eid Element ID
+//! \param[in] vertices List of vertex ids.
 std::pair<unsigned, unsigned> Mesh::node_pairs(
     unsigned eid, std::vector<unsigned>& vertices) {
 
@@ -246,16 +251,16 @@ std::pair<unsigned, unsigned> Mesh::node_pairs(
     }
   }
   return node_pairs;
-  //  this->add_frac_pair(fracture_pairs_);
 }
 
-//! Read ids and coordinates of vertices
+//! \brief Read ids and coordinates of vertices
 //! \param[in] file Input file stream object of msh file
-//! $Nodes
-//! number-of-nodes
-//! node-number x-coord y-coord z-coord
-//! …
-//! $EndNodes
+//! \details <strong>File structure for vertices</strong><br/>
+//! $Nodes<br/>
+//! number-of-nodes<br/>
+//! node-number x-coord y-coord z-coord<br/>
+//! …<br/>
+//! $EndNodes<br/>
 void Mesh::read_vertices(std::ifstream& file) {
   read_keyword(file, "$Nodes");
 

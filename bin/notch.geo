@@ -78,7 +78,7 @@ Plane Surface(5) = {5};
 Plane Surface(6) = {6};
 
 Plane Surface(7) = {7}; 
-Plane Surface(8) = {8}; 
+Plane Surface(8) = {8};
 
 Surface Loop(1) = {1,2,3,4,5,6};
 Volume(1) = {1};
