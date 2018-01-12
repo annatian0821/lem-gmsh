@@ -31,16 +31,3 @@ jobs:
           command: |
             cppcheck --version
             cppcheck --enable=warning --inconclusive --force --language=c++ --std=c++11 src/*.cc include/*.h include/*.tcc --error-exitcode=1
-      # codecoverage
-      - run:
-          name: codecov.io
-          command: |
-            mkdir -p build
-            [ "$(ls -A build)" ] && rm -rf build/*
-            cd build
-            cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DENABLE_COVERAGE=On ..
-            make -j8
-            make gcov
-            make lcov
-            bash <(curl -s https://codecov.io/bash) -X gcov
-

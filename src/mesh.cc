@@ -98,8 +98,7 @@ void Mesh::read_elements(std::ifstream& file) {
       // vertex ids
       std::vector<unsigned> vertices;
       vertices.clear();
-      vertices.resize(nvertices);
-        
+
       for (unsigned id = 0; id < nvertices; ++id) {
         istream >> node_id;
         vertices.push_back(node_id);
@@ -111,19 +110,18 @@ void Mesh::read_elements(std::ifstream& file) {
       if (element_type == 4) {
         Eigen::Vector3d centroid;
         centroid.setZero();
-        for (unsigned vid = 0; vid < nvertices; ++vid) {
-          centroid += vertices_[vid];
+        for (const auto& vertex : vertices) {
+          centroid += vertices_.at(vertex);
         }
         centroid /= nvertices;
         if (volume_id != std::numeric_limits<unsigned>::max())
-          nodes_[volume_id] = centroid;
+          nodes_.push_back(centroid);
         ++volume_id;
       }
       
     } else {
       std::cerr << "Invalid entry for node: " << line << '\n';
     }
-    
   }
 }
 
@@ -166,11 +164,24 @@ void Mesh::read_vertices(std::ifstream& file) {
 
       // Add vertex coordinates and id to a map
       vertices_[vid] = coordinates;
-      
+
       // Increament number of vertex on successful read
       ++i;
     } else {
       std::cerr << "Invalid entry for node: " << line << '\n';
     }
   }
+}
+
+//! Write nodes to a text file
+void Mesh::write_nodes() {
+  std::ofstream nodestream;
+  nodestream.open("nodes.txt", std::ofstream::out);
+  std::cout << "Writing nodes: " << nodes_.size() << "\n";
+  for (auto const& node : nodes_) {
+    // std::cout << node[0] << '\t' << node[1] << '\t' << node[2] << '\n';
+    nodestream << std::left << std::setw(10) << node[0] << '\t' << std::setw(10)
+               << node[1] << '\t' << std::setw(10) << node[2] << '\n';
+  }
+  nodestream.close();
 }

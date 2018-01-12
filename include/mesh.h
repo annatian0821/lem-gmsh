@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <map>
@@ -19,23 +20,26 @@
 //! Mesh class
 //! \brief Mesh class for creating nodes and elements from GMSH input
 class Mesh {
-public:
+ public:
   //! Default constructor
   explicit Mesh(unsigned id) : id_{id} {}
 
   // Read mesh file
-  void read_mesh(const std::string &filename);
+  void read_mesh(const std::string& filename);
 
   // Read keywords from msh file
-  void read_keyword(std::ifstream &file, const std::string &keyword);
+  void read_keyword(std::ifstream& file, const std::string& keyword);
 
   // Read elements from msh file
-  void read_elements(std::ifstream &file);
+  void read_elements(std::ifstream& file);
 
   // Read vertices from msh file
-  void read_vertices(std::ifstream &file);
+  void read_vertices(std::ifstream& file);
 
-private:
+  //! Write nodal coordinates to a text file
+  void write_nodes();
+
+ private:
   //! Index
   unsigned id_{std::numeric_limits<unsigned>::max()};
 
@@ -49,4 +53,4 @@ private:
   std::vector<Eigen::Vector3d> nodes_;
 };
 
-#endif // LEM_GMSH_MESH_H_
+#endif  // LEM_GMSH_MESH_H_

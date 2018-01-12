@@ -20,6 +20,8 @@ int main(int argc, char** argv) {
     // Read mesh file
     mesh->read_mesh(filename);
 
+    // Write nodal coordinates
+    mesh->write_nodes();
   } catch (std::exception& except) {
     std::cout << "Caught exception: " << except.what() << '\n';
   }
