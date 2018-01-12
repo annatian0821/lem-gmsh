@@ -3,10 +3,7 @@
 #include <iostream>
 #include <memory>
 
-#include "element.h"
 #include "mesh.h"
-#include "surface.h"
-#include "vertex.h"
 
 int main(int argc, char** argv) {
   try {
@@ -20,20 +17,8 @@ int main(int argc, char** argv) {
     // Creat mesh object
     std::unique_ptr<Mesh> mesh(new Mesh(1));
 
-    // Read msh file
-    mesh->read_msh_file(filename);
-
-    // Print out fracture pairs and nodes coordinates
-    mesh->write_fracture_pairs();
-
-    // Align fractures
-    mesh->align_nodes_on_plane("Fracture", 1);
-
-    // Align weakplane
-    mesh->align_nodes_on_plane("WeakPlane", 1);
-
-    // Write nodal coordinates
-    mesh->write_nodes();
+    // Read mesh file
+    mesh->read_mesh(filename);
 
   } catch (std::exception& except) {
     std::cout << "Caught exception: " << except.what() << '\n';

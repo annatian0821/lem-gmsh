@@ -5,33 +5,32 @@
  *********************************************************************/
 
 // Mesh size - characteristic length
-lc = 0.025;
+lc = 2.5;
 
 // Edge length
-el = 0.001;
+el = 0.1;
 
 // 8 corner points of a cube
 Point(1) = {0, 0, 0, lc};
-Point(2) = {0.75, 0, 0, lc};
-Point(3) = {0.75, 0.75, 0, lc};
-Point(4) = {0, 0.75, 0, lc};
-Point(5) = {0, 0, 0.13, lc};
-Point(6) = {0.75, 0, 0.13, lc};
-Point(7) = {0.75, 0.75, 0.13, lc};
-Point(8) = {0, 0.75, 0.13, lc};
+Point(2) = {75, 0, 0, lc};
+Point(3) = {75, 75, 0, lc};
+Point(4) = {0, 75, 0, lc};
+Point(5) = {0, 0, 13, lc};
+Point(6) = {75, 0, 13, lc};
+Point(7) = {75, 75, 13, lc};
+Point(8) = {0, 75, 13, lc};
 
 // 4 point define square crack # 1 near the boundary 
-Point(9) = {0.0+el, 0.375, 0.0+el, lc}; 
-Point(10) = {0.13, 0.375, 0.0+el, lc};
-Point(11) = {0.13, 0.375, 0.13-el, lc};
-Point(12) = {0.0+el, 0.375, 0.13-el, lc};
+Point(9) = {0.0+el, 37.5, 0.0+el, lc}; 
+Point(10) = {13, 37.5, 0.0+el, lc};
+Point(11) = {13, 37.5, 13-el, lc};
+Point(12) = {0.0+el, 37.5, 13-el, lc};
 
 // 4 point define square crack # 2 near the boundary 
-Point(13) = {0.62, 0.375, 0.0+el, lc};
-Point(14) = {0.75-el, 0.375, 0.0+el, lc};
-Point(15) = {0.75-el, 0.375, 0.13-el, lc};
-Point(16) = {0.62, 0.375, 0.13-el, lc};
-
+Point(13) = {0.62, 37.5, 0.0+el, lc};
+Point(14) = {75-el, 37.5, 0.0+el, lc};
+Point(15) = {75-el, 37.5, 13-el, lc};
+Point(16) = {0.62, 37.5, 13-el, lc};
 // The distribution of the mesh element sizes is then obtained by
 // interpolation of these characteristic lengths throughout the
 // geometry.
