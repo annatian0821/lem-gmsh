@@ -35,56 +35,6 @@ before_install:
 ################
 matrix:
   include:
-    # GCC 4.9
-    - compiler: gcc-4.9
-      env: COMPILER=g++-4.9
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9    
-      before_script: export CXX=g++-4.9
-
-    # GCC 5
-    - compiler: gcc-5
-      env: COMPILER=g++-5
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-5
-      before_script: export CXX=g++-5
-
-    # Clang 3.9 and static analysis
-    - os: linux
-      compiler: clang-3.9
-      addons:
-       apt:
-         sources:
-           - sourceline: 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.9 main'
-           - sourceline: 'deb-src http://apt.llvm.org/trusty/ llvm-toolchain-trusty-3.9 main'
-         packages:
-           - clang-3.9
-      env: 
-        - COMPILER=clang++-3.9
-        - CONFIG=scan-build
-        - ASAN="ON"
-        - MSAN="ON"
-        - TSAN="ON"
-        - UBSAN="ON"
-        - STATIC_ANALYZER="ON"
-        - CLANG_FORMAT="ON"
-        - CLANG_TIDY="ON"
-      before_install:
-        - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
-        - sudo apt-get update -qq
-        - sudo apt-get install -qq clang-3.9
-      after_success:
-        - scan-build-3.9 cmake ..
-        - scan-build-3.9 make
-
     # Coverity scan 
     - os: linux
       compiler: gcc-5
@@ -105,43 +55,7 @@ matrix:
           notification_email: cued.geomechanics@gmail.com
           build_command_prepend: "sudo ln -sf /usr/bin/g++-5 /usr/bin/g++ && export CXX=g++ && g++ --version && cmake . && make clean"
           build_command: "make"
-          branch_pattern: coverity_scan
-    
-    # Codecov
-    - compiler: gcc-5
-      env:
-        - COMPILER=g++-5
-        - SPECIAL=codecoverage
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5', 'ruby']
-      before_script:
-        - wget http://ftp.de.debian.org/debian/pool/main/l/lcov/lcov_1.11.orig.tar.gz
-        - tar xf lcov_1.11.orig.tar.gz
-        - sudo make -C lcov-1.11/ install
-        - export CXX=g++-5
-      after_success:
-        - rm -rf ./* && cmake -DENABLE_COVERAGE=On ..
-        - make clean && make
-        - # ./lem-gmsh
-        - make gcov
-        - make lcov
-        - bash <(curl -s https://codecov.io/bash) -X gcov
-
-    # Valgrind and cppcheck
-    - compiler: gcc-5
-      env:
-        - COMPILER=g++-5
-        - SPECIAL=valgrind
-      addons:
-        apt:
-          sources: ['ubuntu-toolchain-r-test']
-          packages: ['g++-5', 'cppcheck', 'valgrind']
-      before_script: export CXX=g++-5
-      after_success:
-        # - valgrind --error-exitcode=1 --leak-check=full ./lem-gmsh
-        - cd .. && cppcheck --enable=warning --inconclusive --force --std=c++11 src/*.cc include/*.h include/*.tcc --error-exitcode=1
+          branch_pattern: coverity_scan    
 
 ################
 # build script #

@@ -106,20 +106,24 @@ void Mesh::read_elements(std::ifstream& file) {
       }
       elements_[element_id] = vertices;
 
-      /*
+      
       // Calculate centroid and print coordinates into nodes.txt
       if (element_type == 4) {
-        element->compute_centroid();
-        element->volume_id(volume_id);
+        Eigen::Vector3d centroid;
+        centroid.setZero();
+        for (unsigned vid = 0; vid < nvertices; ++vid) {
+          centroid += vertices_[vid];
+        }
+        centroid /= nvertices;
         if (volume_id != std::numeric_limits<unsigned>::max())
-          volume_elements_[volume_id] = element;
+          nodes_[volume_id] = centroid;
         ++volume_id;
       }
-      */
-
+      
     } else {
       std::cerr << "Invalid entry for node: " << line << '\n';
     }
+    
   }
 }
 
