@@ -15,7 +15,6 @@ jobs:
             cd build
             cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DCMAKE_EXPORT_COMPILE_COMMANDS=On ..
             make -j8 
-            ctest -VV
       # Clang 3.9
       - run:
           name: Clang-4.0 build
@@ -25,7 +24,7 @@ jobs:
             cd build
             cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXPORT_COMPILE_COMMANDS=On ..
             make -j8 
-            ctest -VV
+            
       # cppcheck
       - run:
           name: cppcheck
@@ -41,7 +40,6 @@ jobs:
             cd build
             cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DCMAKE_EXPORT_COMPILE_COMMANDS=On -DENABLE_COVERAGE=On ..
             make -j8
-            ctest -VV
             make gcov
             make lcov
             bash <(curl -s https://codecov.io/bash) -X gcov
