@@ -50,7 +50,7 @@ void Mesh::read_keyword(std::ifstream& file, const std::string& keyword) {
 //! \param[in] file Input file stream object of msh file
 void Mesh::read_elements(std::ifstream& file) {
   read_keyword(file, "$Elements");
-/*
+
   std::string line;
   std::getline(file, line);
   std::istringstream istream(line);
@@ -87,26 +87,26 @@ void Mesh::read_elements(std::ifstream& file) {
       istream >> ntags;
       istream >> object_id;
 
-      // Create an element pointer
-      auto element =
-          std::make_shared<Element>(element_id, element_type, object_id);
-
       // Read element tags
       for (unsigned j = 0; j < ntags - 1; ++j) {
         istream >> tag;
-        element->tag(tag);
       }
 
-      // Find the number of nodes for an element type
-      nnodes = mesh::map_element_type_nodes.at(element_type);
+      // Find the number of vertices for an element type
+      unsigned nvertices = mesh::map_element_type_vertices.at(element_type);
 
-      for (unsigned nodes = 0; nodes < nnodes; ++nodes) {
+      // vertex ids
+      std::vector<unsigned> vertices;
+      vertices.clear();
+      vertices.resize(nnodes);
+        
+      for (unsigned id = 0; id < nvertices; ++id) {
         istream >> node_id;
-        element->add_vid(node_id);
-        auto vptr = this->vertex_ptr_at_id(node_id);
-        if (vptr) element->vertex_ptr(vptr);
+        vertices.push_back(node_id);
       }
+      elements_[element_id] = vertices;
 
+      /*
       // Calculate centroid and print coordinates into nodes.txt
       if (element_type == 4) {
         element->compute_centroid();
@@ -115,12 +115,12 @@ void Mesh::read_elements(std::ifstream& file) {
           volume_elements_[volume_id] = element;
         ++volume_id;
       }
+      */
 
-      this->element_ptr(element);
-    } else
+    } else {
       std::cerr << "Invalid entry for node: " << line << '\n';
+    }
   }
-  */
 }
 
 //! \brief Read ids and coordinates of vertices

@@ -1,0 +1,14 @@
+version: 2.0
+jobs:
+  build:
+    working_directory: /home/cbgeo/research/
+    docker:
+      - image: quay.io/cbgeo/lem
+    steps:
+      - checkout
+      # Set TBB and MKL Paths, configure CMake and run
+      - run:
+          name: Build LEM
+          command: mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ -DCMAKE_EXPORT_COMPILE_COMMANDS=On .. && make clean && make -j8
+
+

@@ -14,6 +14,8 @@
 
 #include <Eigen/Core>
 
+#include "element_map.h"
+
 //! Mesh class
 //! \brief Mesh class for creating nodes and elements from GMSH input
 class Mesh {
@@ -38,7 +40,7 @@ private:
   unsigned id_{std::numeric_limits<unsigned>::max()};
 
   //! Vector of elements (collection of vertex ids)
-  std::vector<Eigen::VectorXi> elements_;
+  std::map<unsigned, std::vector<unsigned>> elements_;
 
   //! A map of vertex id and coordinates
   std::map<unsigned, Eigen::Vector3d> vertices_;
