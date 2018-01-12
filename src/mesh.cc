@@ -98,7 +98,7 @@ void Mesh::read_elements(std::ifstream& file) {
       // vertex ids
       std::vector<unsigned> vertices;
       vertices.clear();
-      vertices.resize(nnodes);
+      vertices.resize(nvertices);
         
       for (unsigned id = 0; id < nvertices; ++id) {
         istream >> node_id;
