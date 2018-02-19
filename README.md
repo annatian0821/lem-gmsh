@@ -16,6 +16,11 @@
 
 * Instructions for running lem docker container: [https://github.com/cb-geo/docker-lem/blob/master/README.md](https://github.com/cb-geo/docker-lem/blob/master/README.md).
 
+## Create a GMSH file
+
+* Make sure `gmsh` is installed. 
+
+* To generate a mesh file in 3D (for example to mesh the `bin/tension.geo`) run `gmsh -3 tension.geo`, this will create a `tension.msh` file, which can be found in the `bin/` directory as well.
 
 ## Compile and Run
 
@@ -23,4 +28,4 @@
 
 1. Run `make clean && make -jN` (where N is the number of cores)
 
-2. Run lem-gmsh `./lem-gmsh /path/to/meshfile.msh`
+2. Run lem-gmsh `./lem-gmsh /path/to/meshfile.msh` this will generate a `nodes.txt` file in the `build` directory.

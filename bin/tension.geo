@@ -1,7 +1,7 @@
 // The simplest construction in Gmsh's scripting language is the
 // `affectation'. The following command defines a new variable `lc':
 
-lc = 0.5;
+lc = 2.0;
 
 // This variable can then be used in the definition of Gmsh's simplest
 // `elementary entity', a `Point'. A Point is defined by a list of
@@ -10,13 +10,13 @@ lc = 0.5;
 
 // 8 corner points of a cube
 Point(1) = {0, 0, 0, lc};
-Point(2) = {5.0, 0, 0, lc};
-Point(3) = {5.0, 5.0, 0, lc};
-Point(4) = {0, 5.0, 0, lc};
-Point(5) = {0, 0, 5.0, lc};
-Point(6) = {5.0, 0, 5.0, lc};
-Point(7) = {5.0, 5.0, 5.0, lc};
-Point(8) = {0, 5.0, 5.0, lc};
+Point(2) = {50.0, 0, 0, lc};
+Point(3) = {50.0, 50.0, 0, lc};
+Point(4) = {0, 50.0, 0, lc};
+Point(5) = {0, 0, 50.0, lc};
+Point(6) = {50.0, 0, 50.0, lc};
+Point(7) = {50.0, 50.0, 50.0, lc};
+Point(8) = {0, 50.0, 50.0, lc};
 
 Line(1) = {1,2} ;
 Line(2) = {2,3} ;
